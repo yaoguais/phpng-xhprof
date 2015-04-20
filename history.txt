@@ -1,0 +1,1000 @@
+  930  telnet 127.0.0.1 9000
+  931  ps -ef | grep PHP
+  932  kill 15 3320
+  933  telnet 127.0.0.1 9000
+  934  ps -ef | grep PHP
+  935  kill 15 3356
+  936  netstat -ano | grep 9000
+  937  telnet 127.0.0.1 9000
+  938  netstat -ano | grep 9000
+  939  ps -ef | grep PHP
+  940  kill 15 1814
+  941  cd /root/download/php-src-master/ext/php_server/
+  942  /root/php7d/bin/php run.php
+  943  /root/php7d/bin/php server.php
+  944  make && make install
+  945  /root/php7d/bin/php server.php
+  946  make && make install
+  947  /root/php7d/bin/php server.php
+  948  gdb /root/php7d/bin/php
+  949  make && make install
+  950  /root/php7d/bin/php server.php
+  951  eclipse/eclipse 
+  952  ps -ef | grep PHP
+  953  reboot
+  954  cd /root/download/
+  955  cd php-src-master/ext/php_server/
+  956  ls
+  957  make && make install
+  958  /root/php7d/bin/php server.php
+  959  cd /root/download/php-src-master/ext/php_server/
+  960  make && make install
+  961  /root/php7d/bin/php server.php
+  962  vi server.php
+  963  /root/php7d/bin/php server.php
+  964  make && make install
+  965  /root/php7d/bin/php server.php
+  966  make clean
+  967  make && make install
+  968  /root/php7d/bin/php server.php
+  969  make && make install
+  970  /root/php7d/bin/php server.php
+  971  make && make install
+  972  /root/php7d/bin/php server.php
+  973  make && make install
+  974  /root/php7d/bin/php server.php
+  975  make && make install
+  976  vi server.php
+  977  /root/php7d/bin/php server.php
+  978  make && make install
+  979  vi server.php
+  980  /root/php7d/bin/php server.php
+  981  vi server.php
+  982  make && make install
+  983  /root/php7d/bin/php server.php
+  984  make && make install
+  985  /root/php7d/bin/php server.php
+  986  vi server.php
+  987  make && make install
+  988  /root/php7d/bin/php server.php
+  989  make && make install
+  990  /root/php7d/bin/php server.php
+  991  make && make install
+  992  /root/php7d/bin/php server.php
+  993  make && make install
+  994  /root/php7d/bin/php server.php
+  995  make && make install
+  996  /root/php7d/bin/php server.php
+  997  make && make install
+  998  lsof --help
+  999  ps -ef | grep PHP
+ 1000  netstat -ano | grep 9000
+ 1001  kill 15 5584
+ 1002  netstat -ano | grep 9000
+ 1003  ps -ef | grep PHP
+ 1004  kill 15 5608
+ 1005  netstat -ano | grep 9000
+ 1006  telnet 127.0.0.1 9000
+ 1007  ps -ef | grep PHP
+ 1008  kill 15 6005
+ 1009  netstat -ano | grep 9000
+ 1010  telnet 127.0.0.1 9000
+ 1011  netstat -ano | grep 9000
+ 1012  ps -ef | grep PHP
+ 1013  kill 15 6411
+ 1014  ps -ef | grep PHP
+ 1015  kill 15 4841
+ 1016  kill 15 6841
+ 1017  netstat -ano | grep 9000
+ 1018  ps -ef | grep PHP
+ 1019  netstat --help
+ 1020  netstat -anop | grep 9000
+ 1021  netstat -anop | grep 9009
+ 1022  telnet 127.0.0.1 9000
+ 1023  netstat -anop | grep 9009
+ 1024  ps -ef | grep PHP
+ 1025  telnet 127.0.0.1 9000
+ 1026  netstat -anop | grep 9009
+ 1027  kill 15 7725
+ 1028  netstat -anop | grep 9009
+ 1029  telnet 127.0.0.1 9009
+ 1030  netstat -anop | grep 9009
+ 1031  ps -ef | grep PHP
+ 1032  kill 15 8120
+ 1033  netstat -anop | grep 9009
+ 1034  telnet 127.0.0.1 9009
+ 1035  ps -ef | grep PHP
+ 1036  kill 15 8704
+ 1037  telnet 127.0.0.1 9009
+ 1038  ps -ef | grep PHP
+ 1039  kill 15 9449
+ 1040  telnet 127.0.0.1 9009
+ 1041  ps -ef | grep PHP
+ 1042  kill 15 9849
+ 1043  telnet 127.0.0.1 9009
+ 1044  vi server.php
+ 1045  ps -ef | grep PHP
+ 1046  kill 15 10238
+ 1047  telnet 127.0.0.1 9009
+ 1048  cd /root/download/php-src-master/ext/php_server/
+ 1049  ls
+ 1050  vi server.c
+ 1051  vi server.php
+ 1052  ps -ef | grep PHP
+ 1053  kill 15 10692
+ 1054  telnet 127.0.0.1 9009
+ 1055  ps -ef | grep PHP
+ 1056  kill 15 11162
+ 1057  telnet 127.0.0.1 9009
+ 1058  ps -ef | grep PHP
+ 1059  kill 15 11551
+ 1060  telnet 127.0.0.1 9009
+ 1061  ps -ef | grep PHP
+ 1062  kill 15 11951
+ 1063  vi server.php
+ 1064  telnet 127.0.0.1 9009
+ 1065  ps -ef | grep PHP
+ 1066  kill 15 11984
+ 1067  vi server.php
+ 1068  telnet 127.0.0.1 9009
+ 1069  vi server.php
+ 1070  ps -ef | grep PHP
+ 1071  kill 15 12001
+ 1072  telnet 127.0.0.1 9009
+ 1073  bbbbbbb
+ 1074  ps -ef | grep PHP
+ 1075  kill 15 12017
+ 1076  telnet 127.0.0.1 9009
+ 1077  ps -ef | grep PHP
+ 1078  kill 15 12398
+ 1079  lsof
+ 1080  netstat -ano | grep 9009
+ 1081  netstat -ano | grep 9000
+ 1082  vi server.php
+ 1083  telnet 127.0.0.1 9009
+ 1084  vi server.php
+ 1085  ps -ef | grep PHP
+ 1086  kill 15 12431
+ 1087  git add .
+ 1088  git commit -m "fd"
+ 1089  git push origin master
+ 1090  eclipse/eclipse 
+ 1091  cd /root/download/php-src-master/ext/php_server/
+ 1092  ls
+ 1093  vi server.php
+ 1094  telnet 127.0.0.1 9009
+ 1095  ps -ef | grep PHP
+ 1096  kill 15 3803
+ 1097  ps -ef | grep PHP
+ 1098  netstat -ano | grep 9009
+ 1099  ps -ef | grep PHP
+ 1100  telnet 127.0.0.1 9009
+ 1101  ps -ef | grep PHP
+ 1102  gdb -p 3804
+ 1103  strace -p 3804
+ 1104  gdb -p 3804
+ 1105  gdb -p 4921
+ 1106  shutdown -h now
+ 1107  eclipse/eclipse 
+ 1108  cd /root/download/php-src-master/ext/php
+ 1109  cd /root/download/php-src-master/ext/php_server/
+ 1110  /root/php7d/bin/php server.php
+ 1111  vi server.php
+ 1112  make && make install
+ 1113  /root/php7d/bin/php server.php
+ 1114  make && make install
+ 1115  /root/php7d/bin/php server.php
+ 1116  make && make install
+ 1117  /root/php7d/bin/php server.php
+ 1118  vi server.php
+ 1119  /root/php7d/bin/php server.php
+ 1120  make && make install
+ 1121  /root/php7d/bin/php server.php
+ 1122  cd /root/download/php-src-master/ext/
+ 1123  cd php_server/
+ 1124  /root/php7d/bin/php server.php
+ 1125  make && make install
+ 1126  /root/php7d/bin/php server.php
+ 1127  bg
+ 1128  /root/php7d/bin/php server.php
+ 1129  make && make install
+ 1130  make
+ 1131  clear
+ 1132  make
+ 1133  make clean
+ 1134  make
+ 1135  cd ...
+ 1136  cd ..
+ 1137  ls
+ 1138  cd xml
+ 1139  ls
+ 1140  cd zip
+ 1141  cd ../
+ 1142  cd zip
+ 1143  ls
+ 1144  /root/php7d/bin/phpize
+ 1145  ls
+ 1146  ./configure --with-php-config=/root/php7d/bin/php-config 
+ 1147  make
+ 1148  ls
+ 1149  ./configure --with-php-config=/root/php7d/bin/php-config 
+ 1150  whereis zlib
+ 1151  cd ..
+ 1152  ls
+ 1153  cd reflection/
+ 1154  /root/php7d/bin/phpize
+ 1155  ./configure --with-php-config=/root/php7d/bin/php-config 
+ 1156  ls
+ 1157  make
+ 1158  make clean
+ 1159  make
+ 1160  make clean
+ 1161  make
+ 1162  cd ../
+ 1163  cd php_server/
+ 1164  make
+ 1165  make clean
+ 1166  make
+ 1167  make clean
+ 1168  make
+ 1169  make && make install
+ 1170  ab -c100 -n100 http://www.baidu.com/
+ 1171  git add .
+ 1172  git commit -m "gogogo"
+ 1173  git push origin master
+ 1174  reboot
+ 1175  eclipse/eclipse 
+ 1176  telnet 127.0.0.1 9009
+ 1177  ps -ef | grep PHP
+ 1178  kill 15 6906
+ 1179  telnet 127.0.0.1 9009
+ 1180  netstat -ano | grep 9009
+ 1181  whereis ab
+ 1182  ab -c 100 -n 1000 http://127.0.0.1:9009/
+ 1183  netstat -ano | grep 9009
+ 1184  ab -c 100 -n 1000 http://127.0.0.1:9009/
+ 1185  netstat -ano | grep 9009
+ 1186  ab -c 100 -n 1000 http://127.0.0.1:9009/
+ 1187  netstat -ano | grep 9009
+ 1188  ab -c 100 -n 100 http://127.0.0.1:9009/
+ 1189  ps -ef | grep PHP
+ 1190  kill 15 7791
+ 1191  ps -ef | grep PHP
+ 1192  ab -c 100 -n 100 http://127.0.0.1:9009/
+ 1193  ab -c 10 -n 10 http://127.0.0.1:9009/
+ 1194  ab -k -c 10 -n 10 http://127.0.0.1:9009/
+ 1195  ps -ef | grep PHP
+ 1196  strace -p 9494
+ 1197  tcpdump --help
+ 1198  tcpdump
+ 1199  ab -k -c 10 -n 100 http://127.0.0.1:9009/
+ 1200  curl http://127.0.0.1
+ 1201  curl http://127.0.0.1:9009/
+ 1202  curl --help
+ 1203  curl -H http://127.0.0.1:9009/
+ 1204  curl -H "GET / \r\nHost: 127.0.0.1:9009\r\n\r\n" http://127.0.0.1:9009/
+ 1205  curl www.baidu.com
+ 1206  clear
+ 1207  clear --help
+ 1208  ab -k -c 1 -n 1 http://127.0.0.1:9009/
+ 1209  ab -c 1 -n 1 http://127.0.0.1:9009/
+ 1210  netstat -ano | grep 9009
+ 1211  netstat -ano | grep 9009 | wc
+ 1212  netstat -ano | grep 9009 | wc -n
+ 1213  wc --help
+ 1214  netstat -ano | grep 9009 | wc -l
+ 1215  netstat -ano | grep 9009
+ 1216  netstat -ano | grep 9009 | wc -l
+ 1217  netstat -ano | grep 9009
+ 1218  ps -ef | grep PHP
+ 1219  kill 15 9493
+ 1220  kill 15 9493
+ 1221  ps -ef | grep PHP
+ 1222  kill 15 10208
+ 1223  netstat -ano | grep 9009
+ 1224  netstat -ano | grep 9009 | wc -l
+ 1225  netstat -ano | grep 9009
+ 1226  ps -ef | grep PHP
+ 1227  kill 15 10536
+ 1228  cd /root/download/php-src-master/ext/php_server/
+ 1229  ls
+ 1230  make clean
+ 1231  make && make isntall
+ 1232  /root/php7d/bin/php server.php
+ 1233  make clean
+ 1234  make && make install
+ 1235  /root/php7d/bin/php server.php
+ 1236  make clean
+ 1237  make && make install
+ 1238  /root/php7d/bin/php server.php
+ 1239  make clean
+ 1240  make
+ 1241  make install
+ 1242  /root/php7d/bin/php server.php
+ 1243  make clean && make && make install
+ 1244  /root/php7d/bin/php server.php
+ 1245  make clean && make && make install
+ 1246  /root/php7d/bin/php server.php
+ 1247  ps -ef | grep PHP
+ 1248  /root/php7d/bin/php server.php
+ 1249  make clean
+ 1250  make
+ 1251  make clean
+ 1252  make
+ 1253  make clean
+ 1254  make
+ 1255  make clean
+ 1256  make
+ 1257  make clean && make && make install
+ 1258  git add .
+ 1259  git commit -m "close"
+ 1260  git push origin master
+ 1261  vi /root/php7d/lib/php.ini
+ 1262  /root/php7d/bin/php server.php
+ 1263  make
+ 1264  MAKE
+ 1265  make
+ 1266  make install
+ 1267  vi /root/php7d/lib/php.ini
+ 1268  /root/php7d/bin/php server.php
+ 1269  make && make install
+ 1270  /root/php7d/bin/php server.php
+ 1271  make && make install
+ 1272  vi /root/php7d/lib/php.ini
+ 1273  /root/php7d/bin/php server.php
+ 1274  ps -ef | grep php
+ 1275  ps -ef | grep PHP
+ 1276  kill 15 3323
+ 1277  ps -ef | grep PHP
+ 1278  netstat -ano | grep 9009
+ 1279  ps -ef | grep PHP
+ 1280  kill 15 3827
+ 1281  ifconfig
+ 1282  ps -ef | grep PHP
+ 1283  gdb -p 4258
+ 1284  gdb -p 4259
+ 1285  /root/php7d/bin/php test.php
+ 1286  cd /root/download/php-src-master/ext/php_server/
+ 1287  /root/php7d/bin/php test.php
+ 1288  gdb -p 4260
+ 1289  gdb -p 4261
+ 1290  gdb -p 4262
+ 1291  gdb -p 4263
+ 1292  gdb -p 4264
+ 1293  ps -ef | grep PHP
+ 1294  kill 15 5358
+ 1295  ps -ef | grep PHP
+ 1296  kill 15 5374
+ 1297  gdb -p 5376
+ 1298  ps -ef | grep PHP
+ 1299  gdb -p 5809
+ 1300  gdb -p 5810
+ 1301  ulimit
+ 1302  cat /proc/sys/kernel/core_pattern
+ 1303  ls /usr/share/apport/
+ 1304  ls /usr/share
+ 1305  ls -l /usr/share/apport
+ 1306  ulimit --hel
+ 1307  ulimit --help
+ 1308  ulimit -c unlimited
+ 1309  ulimit
+ 1310  ps -ef | grep PHP
+ 1311  kill 15 5806
+ 1312  ps -ef | grep PHP
+ 1313  kill 15 6947
+ 1314  vi /home/yaoguai/.vimrc 
+ 1315  vi /etc/sysctl.conf 
+ 1316  cp /etc/sysctl.conf /etc/sysctl.conf.default
+ 1317  ls /etc | grep sysctl
+ 1318  ls /etc/sysctl.d
+ 1319  vi /etc/sysctl.conf 
+ 1320  /sbin/sysctl -p
+ 1321  cd /root
+ 1322  cd download/php-src-master/ext/php_server/
+ 1323  ls
+ 1324  git pull origin master
+ 1325  cd /home/yaoguai
+ 1326  ls
+ 1327  eclipse/eclipse 
+ 1328  cd /root/download/php-src-master/ext/php_server/
+ 1329  ls
+ 1330  /root/php7d/bin/php server.php
+ 1331  vi server.php
+ 1332  /root/php7d/bin/php server.php
+ 1333  vi server.php
+ 1334  /root/php7d/bin/php server.php
+ 1335  vi server.php
+ 1336  /root/php7d/bin/php server.php
+ 1337  vi server.php
+ 1338  /root/php7d/bin/php server.php
+ 1339  vi server.php
+ 1340  /root/php7d/bin/php server.php
+ 1341  vi server.php
+ 1342  /root/php7d/bin/php server.php
+ 1343  make && make instal
+ 1344  make clean
+ 1345  make 
+ 1346  make install
+ 1347  /root/php7d/bin/php server.php
+ 1348  make 
+ 1349  make install
+ 1350  /root/php7d/bin/php server.php
+ 1351  vi server.php
+ 1352  /root/php7d/bin/php server.php
+ 1353  make && make install
+ 1354  /root/php7d/bin/php server.php
+ 1355  make 
+ 1356  make
+ 1357  make install
+ 1358  /root/php7d/bin/php server.php
+ 1359  service httpd start
+ 1360  ls /etc/init.d/
+ 1361  service apache2 start
+ 1362  netstat -ano | grep 80
+ 1363  curl http://127.0.0.1:80/
+ 1364  ab -n100 -c100 http://127.0.0.1:80/
+ 1365  netstat -ano | grep 80
+ 1366  netstat -anop | grep 80
+ 1367  netstat -ano | grep 80
+ 1368  ab -n100 -c100 http://127.0.0.1:80/
+ 1369  netstat -ano | grep 80
+ 1370  service apache2 start
+ 1371  whereis tcpdump
+ 1372  tcpdump port 80 -w /root/80tcpdump.txt
+ 1373  tcpdump --help
+ 1374  tcpdump -w /root/80tcpdump.txt
+ 1375  tcpdump -i lo -w /root/80tcpdump.txt
+ 1376  tcpdump -i lo -w /root/80tcpdump.txt tcp port 80
+ 1377  tcpdump tcp port 80
+ 1378  tcpdump tcp port 80 -i lo
+ 1379  tcpdump tcp port 80 -i lo -v
+ 1380  cd /root/download/php-src-master/ext/php_server/
+ 1381  vi server.php
+ 1382  tcpdump tcp port 80 -i lo -v -w /root/80.txt
+ 1383  vi server.php
+ 1384  ls
+ 1385  ls /etc/default
+ 1386  vi /etc/default/grub
+ 1387  sudo update-grub
+ 1388  tcpdump tcp port 80 -i lo -v -w /root/9009.txt
+ 1389  tcpdump tcp port 9009 -i lo -v -w /root/9009.txt
+ 1390  tcpdump tcp port 9009 -i lo -w /root/9009.txt
+ 1391  tcpdump tcp port 80 -i lo -w /root/80.txt
+ 1392  vi php_server.c
+ 1393  make
+ 1394  make clean
+ 1395  make
+ 1396  make install
+ 1397  tcpdump tcp port 80 -i lo
+ 1398  tcpdump tcp port 9009 -i lo
+ 1399  /root/php7d/bin/php server.php 
+ 1400  make clean
+ 1401  make 
+ 1402  make
+ 1403  make install
+ 1404  /root/php7d/bin/php server.php 
+ 1405  vi /root/php7d/lib/php.ini
+ 1406  cd /root/download/php-src-master/ext/php_server/
+ 1407  ls
+ 1408  make && make instlal
+ 1409  make clean && make && make install
+ 1410  ab -c5 -n5 http://127.0.0.1:9009/
+ 1411  ps -ef | grep php
+ 1412  ps -oef user,stat,cmd | grep php
+ 1413  ps -efo user,stat,cmd | grep php
+ 1414  ps -eo user,stat,cmd | grep php
+ 1415  netstat -ano | grep php
+ 1416  netstat -ano | grep 9009
+ 1417  vi index.html
+ 1418  curl -i http://127.0.0.1:80/
+ 1419  ls /root
+ 1420  rm /root/80tcpdump.txt 
+ 1421  ab -c1 -n1 http://127.0.0.1:80/
+ 1422  ls /root
+ 1423  cat /root/80tcpdump.txt 
+ 1424  ab -c1 -n1 http://127.0.0.1:80/
+ 1425  cat /root/80tcpdump.txt 
+ 1426  ifconfig
+ 1427  ab -c1 -n1 http://192.168.1.104:80/
+ 1428  cat /root/80tcpdump.txt 
+ 1429  ab -c1 -n1 http://192.168.1.104:80/
+ 1430  cat /root/80tcpdump.txt 
+ 1431  ifconfig
+ 1432  rm /root/80tcpdump.txt 
+ 1433  cat /root/80tcpdump.txt 
+ 1434  ab -c1 -n1 http://127.0.0.1:80/
+ 1435  cat /root/80tcpdump.txt 
+ 1436  rm /root/80tcpdump.txt 
+ 1437  curl -i http://127.0.0.1:80/
+ 1438  cat /root/80tcpdump.txt 
+ 1439  ficonfig
+ 1440  ifconfig
+ 1441  cat /root/80tcpdump.txt 
+ 1442  rm /root/80tcpdump.txt 
+ 1443  ab -c1 -n1 http://127.0.0.1:80/
+ 1444  ls /root
+ 1445  ab -c1 -n1 http://127.0.0.1:80/
+ 1446  cat /root/80.txt 
+ 1447  ab -c1 -n1 http://127.0.0.1:9009/
+ 1448  cat /root/9009.txt 
+ 1449  ab -c100 -n100 http://127.0.0.1:80/
+ 1450  ab -c100 -n100 http://127.0.0.1:9009/
+ 1451  netstat -ano | grep 80
+ 1452  netstat -ano | grep 9009
+ 1453  ab -c10 -n10 http://127.0.0.1:9009/
+ 1454  netstat -ano | grep 9009
+ 1455  rm /root/9009.txt 
+ 1456  cat /root/9009.txt 
+ 1457  ab -c5 -n5 http://127.0.0.1:9009/
+ 1458  rm /root/80.txt 
+ 1459  ab -c5 -n5 http://127.0.0.1:80/
+ 1460  cat /root/80.txt 
+ 1461  vi /root/80.txt 
+ 1462  vi /root/9009.txt 
+ 1463  ab -c5 -n5 http://127.0.0.1:80/
+ 1464  ab -c5 -n5 http://127.0.0.1:9009/
+ 1465  vi /root/9009.bak.txt
+ 1466  cat /root/9009.bak.txt | grep 175
+ 1467  cat /root/9009.bak.txt | grep 174
+ 1468  cat /root/9009.bak.txt | grep 174
+ 1469  ab -c5 -n5 http://127.0.0.1:9009/
+ 1470  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1471  cd /root/download/php-src-master/ext/php_server/
+ 1472  ls
+ 1473  vi /root/php7d/lib/php.ini
+ 1474  /root/php7d/bin/php run.php
+ 1475  vi /var/www/r/html/run.php
+ 1476  vi /var/www/html/run.php
+ 1477  mv /home/yaoguai/图片/*-server.png ./
+ 1478  ls
+ 1479  cat /proc/version
+ 1480  git add .
+ 1481  git commit -m "ab"
+ 1482  git push origin master
+ 1483  whereis apache
+ 1484  whereis apache2
+ 1485  apache2 -V
+ 1486  apache2 --help
+ 1487  apache2 -v
+ 1488  vi README.md 
+ 1489  git commit -m "readme"
+ 1490  git add .
+ 1491  git push origin master
+ 1492  git add .
+ 1493  git commit -m "update-readme"
+ 1494  git push origin master
+ 1495  cd /root/download/php-src-master/ext/php_server/
+ 1496  ls
+ 1497  /root/php7d/bin/php server.php
+ 1498  vi /root/p/phplib
+ 1499  vi /root/p/phplib/php.ini
+ 1500  ls /root
+ 1501  ls /root/php7d/
+ 1502  ls /root/php7d/lib
+ 1503  vi /root/php7d/lib/php.ini
+ 1504  /root/php7d/bin/php server.php
+ 1505  vi php_server.c
+ 1506  make && make install
+ 1507  /root/php7d/bin/php server.php
+ 1508  vi php_server.c
+ 1509  make && make install
+ 1510  /root/php7d/bin/php server.php
+ 1511  vi php_server.c
+ 1512  make clean && make && make install
+ 1513  /root/php7d/bin/php server.php
+ 1514  vi php_server.c
+ 1515  /home/yaoguai/eclipse/eclipse 
+ 1516  ls /etc | grep php
+ 1517  php
+ 1518  ls /etc | grep http
+ 1519  ls /etc | grep apache
+ 1520  ls /etc | grep apache2
+ 1521  cd /etc/apache2
+ 1522  ls
+ 1523  whereis php
+ 1524  vi /var/www/html/phpinfo.php
+ 1525  service apache2 star
+ 1526  vi /var/www/html/index.html
+ 1527  cd /root/download/php-src-master/ext/php_server/
+ 1528  ls
+ 1529  rm php-server.png
+ 1530  rm apache-server.png
+ 1531  cd images
+ 1532  ls
+ 1533  git pull origin master
+ 1534  ls
+ 1535  rm bench.png  kill.png server.png 
+ 1536  cd ..
+ 1537  ls
+ 1538  rm php-server.png
+ 1539  git add .
+ 1540  git commit -m "delete image"
+ 1541  git push origin master
+ 1542  touch save.php
+ 1543  git add .
+ 1544  git commit -m "force"
+ 1545  rm save.php
+ 1546  git commit -m "save"
+ 1547  git push origin master
+ 1548  ls
+ 1549  ls -a
+ 1550  vi .gitignore 
+ 1551  git delete test.php
+ 1552  git --help
+ 1553  git rm test.php
+ 1554  git rm save.php
+ 1555  git rm php_server.loT php-server.png images/server.png images/kill.png images/bench.png apache-server.png
+ 1556  git commit -m "delete all"
+ 1557  git push origin master
+ 1558  /root/php7d/bin/php run.php
+ 1559  tcpdump -h
+ 1560  ls /root/
+ 1561  rm /root/80.txt /root/9009.bak.txt /root/9009.txt 
+ 1562  tcpdump -i lo -w 9009.1.txt
+ 1563  tcpdump -i lo -w 9009.2.txt
+ 1564  tcpdump -i lo -w 9009.3.txt
+ 1565  ls /root
+ 1566  ls -l /root
+ 1567  rm /root/php_server_debug.txt 
+ 1568  cat /root/php_server_debug.txt | grep "epoll come in master" | wc -l
+ 1569  cat /root/php_server_debug.txt | grep "epoll come in worker" | wc -l
+ 1570  rm /root/php_server_debug.txt 
+ 1571  cat /root/php_server_debug.txt | grep "epoll come in worker" | wc -l
+ 1572  cat /root/php_server_debug.txt | grep "epoll come in master" | wc -l
+ 1573  rm /root/php_server_debug.txt 
+ 1574  cat /root/php_server_debug.txt | grep "__accepted" | wc -l
+ 1575  cat /root/php_server_debug.txt | grep "__will_accept" | wc -l
+ 1576  cat /root/php_server_debug.txt | grep "__recv_error" | wc -l
+ 1577  cat /root/php_server_debug.txt | grep "__client_close" | wc -l
+ 1578  cat /root/php_server_debug.txt | grep "__recv_from" | wc -l
+ 1579  cat /root/php_server_debug.txt | grep "____send" | wc -l
+ 1580  cat /root/php_server_debug.txt | grep "__send" | wc -l
+ 1581  cat /root/php_server_debug.txt | grep "__close" | wc -l
+ 1582  cat /root/php_server_debug.txt | grep "epoll come in master:1" | wc -l
+ 1583  cat /root/php_server_debug.txt | grep "epoll come in master:-1" | wc -l
+ 1584  cat /root/php_server_debug.txt | grep "epoll come in master:0" | wc -l
+ 1585  eclipse/eclipse 
+ 1586  ls gedit /etc/X11/Xsession.d/95xinput
+ 1587  ls gedit /etc/X11/Xsession.d/
+ 1588  ps -ef | grep ibus
+ 1589  ls /home
+ 1590  ls -l /home
+ 1591  ls -l /
+ 1592  chown -R yaoguai /root
+ 1593  ls -l /
+ 1594  eclipse/eclipse 
+ 1595  chown -R root /root/.config/ibus
+ 1596  cd /root/.config/ibus
+ 1597  ls
+ 1598  ls -l
+ 1599  cd bus
+ 1600  ls
+ 1601  killall ibus-daemon
+ 1602  ibus-daemon -d
+ 1603  eclipse/eclipse 
+ 1604  eclipse/eclipse  &
+ 1605  ps -ef | grep sun
+ 1606  find / -name sun
+ 1607  find / -name sunpinyin
+ 1608  find / -name sunpinyin | ls -l
+ 1609  ls -l /usr/lib/x86_64-linux-gnu/sunpinyin
+ 1610  ls -l /usr/lib/x86_64-linux-gnu/sunpinyin/data
+ 1611  cat /usr/lib/x86_64-linux-gnu/sunpinyin/data/lm_sc.t3g 
+ 1612  cat /root/php_server_debug.txt | grep "__will" | wc -l
+ 1613  cat /root/php_server_debug.txt | grep "masterEPOLLIN" | wc -l
+ 1614  cat /root/php_server_debug.txt | grep "masterEPOLLPRI" | wc -l
+ 1615  cat /root/php_server_debug.txt | grep "masterEPOLLOUT" | wc -l
+ 1616  cat /root/php_server_debug.txt | grep "masterEPOLLRDN" | wc -l
+ 1617  cat /root/php_server_debug.txt | grep "masterEPOLLRDB" | wc -l
+ 1618  cat /root/php_server_debug.txt | grep "masterEPOLLWR" | wc -l
+ 1619  cat /root/php_server_debug.txt | grep "masterEPOLLM" | wc -l
+ 1620  cat /root/php_server_debug.txt | grep "masterEPOLLE" | wc -l
+ 1621  cat /root/php_server_debug.txt | grep "masterEPOLLERD" | wc -l
+ 1622  cat /root/php_server_debug.txt | grep "masterEPOLLEH" | wc -l
+ 1623  cat /root/php_server_debug.txt | grep "masterEPOLLEO" | wc -l
+ 1624  cat /root/php_server_debug.txt | grep "masterEPOLLEW" | wc -l
+ 1625  cat /root/php_server_debug.txt | grep "masterEPOLLO" | wc -l
+ 1626  cat /root/php_server_debug.txt | grep "masterEPOLLW" | wc -l
+ 1627  cat /root/php_server_debug.txt | grep "__will_accept" | wc -l
+ 1628  service apache2 start
+ 1629  ab -c100 -n1000 http://127.0.0.1:80/
+ 1630  cat /root/php_server_debug.txt | grep "__accepted" | wc -l
+ 1631  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1632  cat /root/php_server_debug.txt | grep "__will" | wc -l
+ 1633  cat /root/php_server_debug.txt | grep "__accepted" | wc -l
+ 1634  cat /root/php_server_debug.txt | grep "__accept_error" | wc -l
+ 1635  cat /root/php_server_debug.txt | grep "__close" | wc -l
+ 1636  cat /root/php_server_debug.txt | grep "__client_close" | wc -l
+ 1637  ab -c10 -n10 http://127.0.0.1:9009/
+ 1638  netstat -ano | grep 9009
+ 1639  ab -c10 -n10 http://127.0.0.1:9009/
+ 1640  gvim /root/php_server_debug.txt 
+ 1641  gedit /root/php_server_debug.txt 
+ 1642  rm -rf /home/yaoguai/eclipse/19690417lh%*
+ 1643  ps -ef | grep php
+ 1644  netstat -ano | grep 9009
+ 1645  ps -ef | grep php
+ 1646  netstat -ano | grep 9009
+ 1647  ps -ef | grep php
+ 1648  cat /root/php_server_debug.txt 
+ 1649  cat /root/php_server_debug.txt | grep "__will" | wc -l
+ 1650  cat /root/php_server_debug.txt | grep "__accepted" | wc -l
+ 1651  cat /root/php_server_debug.txt | grep "__close" | wc -l
+ 1652  cat /root/php_server_debug.txt | grep "__client_close" | wc -l
+ 1653  cat /root/php_server_debug.txt | grep "__send" | wc -l
+ 1654  cat /root/php_server_debug.txt | grep "__recv_from" | wc -l
+ 1655  cat /root/php_server_debug.txt | grep "__recv_error" | wc -l
+ 1656  cat /root/php_server_debug.txt | grep "__recv_once" | wc -l
+ 1657  cat /root/php_server_debug.txt | grep "receive error" | wc -l
+ 1658  cat /root/php_server_debug.txt | grep "__will" | wc -l
+ 1659  cat /root/php_server_debug.txt | grep "__accepted" | wc -l
+ 1660  cat /root/php_server_debug.txt | grep "__accept_error" | wc -l
+ 1661  cat /root/php_server_debug.txt | grep "__close" | wc -l
+ 1662  cat /root/php_server_debug.txt | grep "__close_on" | wc -l
+ 1663  cat /root/php_server_debug.txt | grep "__recv_from" | wc -l
+ 1664  cat /root/php_server_debug.txt | grep "__recv_once" | wc -l
+ 1665  cat /root/php_server_debug.txt | grep "__recv_error" | wc -l
+ 1666  gedit /root/php_server_debug.txt 
+ 1667  cat /root/php_server_debug.txt 
+ 1668  gvim /root/php_server_debug.txt 
+ 1669  ls /root/.vimrc
+ 1670  edit /root/.vimrc
+ 1671  gedit /root/.vimrc
+ 1672  gvim /root/php_server_debug.txt 
+ 1673  car /root/php_server_debug.txt 
+ 1674  cat /root/php_server_debug.txt 
+ 1675  gvim /root/php_server_debug.txt 
+ 1676  cat /root/php_server_debug.txt | grep "__pipe_data" | wc -l
+ 1677  cat /root/php_server_debug.txt | grep "__accepted" | wc -l
+ 1678  cd /root/download/php-src-master/ext/php_server/
+ 1679  ls
+ 1680  make clean && make && make install
+ 1681  /root/php7d/bin/php server.php
+ 1682  make clean && make && make install
+ 1683  /root/php7d/bin/php server.php
+ 1684  make clean && make && make install
+ 1685  /root/php7d/bin/php server.php
+ 1686  make clean && make && make install
+ 1687  /root/php7d/bin/php server.php
+ 1688  make clean && make && make install
+ 1689  /root/php7d/bin/php server.php
+ 1690  make clean && make && make install
+ 1691  /root/php7d/bin/php server.php
+ 1692  make clean && make && make install
+ 1693  /root/php7d/bin/php server.php
+ 1694  make clean && make && make install
+ 1695  /root/php7d/bin/php server.php
+ 1696  make clean && make && make install
+ 1697  /root/php7d/bin/php server.php
+ 1698  /root/php7d/bin/php debug.php
+ 1699  make clean && make && make install
+ 1700  /root/php7d/bin/php debug.php
+ 1701  /root/php7d/bin/php server.php
+ 1702  /root/php7d/bin/php debug.php
+ 1703  make clean && make && make install
+ 1704  /root/php7d/bin/php server.php
+ 1705  /root/php7d/bin/php debug.php
+ 1706  make clean && make && make install
+ 1707  /root/php7d/bin/php server.php
+ 1708  /root/php7d/bin/php debug.php
+ 1709  git add .
+ 1710  git commit -m "5k"
+ 1711  git push origin master
+ 1712  make clean && make && make install
+ 1713  /root/php7d/bin/php server.php
+ 1714  chown -R yaoguai ./debug
+ 1715  ab -c7 -n7 http://127.0.0.1:9009/
+ 1716  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1717  chown -R yaoguai ./debug
+ 1718  ab -c7 -n7 http://127.0.0.1:9009/
+ 1719  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1720  chown -R yaoguai ./debug
+ 1721  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1722  ab -c1000 -n1000 http://127.0.0.1:9009/
+ 1723  chown -R yaoguai ./debug
+ 1724  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1725  ab -c14 -n14 http://127.0.0.1:9009/
+ 1726  ab -c14 -n28 http://127.0.0.1:9009/
+ 1727  ab -c14 -n56 http://127.0.0.1:9009/
+ 1728  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1729  chown -R yaoguai ./debug
+ 1730  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1731  chown -R yaoguai ./debug
+ 1732  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1733  chown -R yaoguai ./debug
+ 1734  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1735  chown -R yaoguai ./debug
+ 1736  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1737  cat /home/yaoguai/debug/php-server-8094.txt | grep "__recv_from" | wc -l
+ 1738  cat /home/yaoguai/debug/php-server-8095.txt | grep "__recv_from" | wc -l
+ 1739  cat /home/yaoguai/debug/php-server-8096.txt | grep "__recv_from" | wc -l
+ 1740  cat /home/yaoguai/debug/php-server-8097.txt | grep "__recv_from" | wc -l
+ 1741  cat /home/yaoguai/debug/php-server-8098.txt | grep "__recv_from" | wc -l
+ 1742  cat /home/yaoguai/debug/php-server-8099.txt | grep "__recv_from" | wc -l
+ 1743  cat /home/yaoguai/debug/php-server-8100.txt | grep "__recv_from" | wc -l
+ 1744  chown -R yaoguai ./debug
+ 1745  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1746  chown -R yaoguai ./debug
+ 1747  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1748  chown -R yaoguai ./debug
+ 1749  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1750  cd /root/download/php-src-master/ext/php_server/
+ 1751  ls
+ 1752  /root/php7d/bin/php server.php
+ 1753  ps -ef | grep php
+ 1754  kill -15 12660
+ 1755  ps -ef | grep php
+ 1756  pkill -15 12661
+ 1757  ps -ef | grep php
+ 1758  make clean
+ 1759  make
+ 1760  make install
+ 1761  reboot
+ 1762  cd /root/download/php-src-master/ext/php_server/
+ 1763  make clean && make && make install
+ 1764  /root/php7d/bin/php server.php
+ 1765  /root/php7d/bin/php debug.php
+ 1766  make clean && make && make install
+ 1767  /root/php7d/bin/php debug.php
+ 1768  /root/php7d/bin/php server.php
+ 1769  /root/php7d/bin/php debug.php
+ 1770  make clean && make && make install
+ 1771  /root/php7d/bin/php server.php
+ 1772  /root/php7d/bin/php debug.php
+ 1773  make clean && make && make install
+ 1774  /root/php7d/bin/php server.php
+ 1775  /root/php7d/bin/php debug.php
+ 1776  make clean && make && make install
+ 1777  /root/php7d/bin/php server.php
+ 1778  make clean && make && make install
+ 1779  /root/php7d/bin/php server.php
+ 1780  /root/php7d/bin/php debug.php
+ 1781  git add .
+ 1782  git commit -m "10k"
+ 1783  git push origin master
+ 1784  chown -R yaoguai ./debug
+ 1785  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1786  chown -R yaoguai ./debug
+ 1787  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1788  chown -R yaoguai ./debug
+ 1789  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1790  chown -R yaoguai ./debug
+ 1791  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1792  chown -R yaoguai ./debug
+ 1793  ab -c100 -n1000 http://127.0.0.1:9009/
+ 1794  service apache2 start
+ 1795  ab -c100 -n1000 http://127.0.0.1:80/
+ 1796  ls
+ 1797  rm 1969*
+ 1798  rm -rf 1969*
+ 1799  ls
+ 1800  cd 下载
+ 1801  mv PhpStorm-8.0.3.tar.gz ../
+ 1802  ls
+ 1803  cd ..
+ 1804  ls
+ 1805  tar -zvxf PhpStorm-8.0.3.tar.gz 
+ 1806  ls
+ 1807  mv PhpStorm-8.0.3.tar.gz ./下载/
+ 1808  ls
+ 1809  cd PhpStorm-139.1348/
+ 1810  ls
+ 1811  cd bin
+ 1812  ls
+ 1813  sh phpstorm.sh
+ 1814  rm -rf PhpStorm-139.1348
+ 1815  cd 下载
+ 1816  tar -zvxf PhpStorm-8.0.3.tar.gz ../
+ 1817  tar -zvxf PhpStorm-8.0.3.tar.gz
+ 1818  ls
+ 1819  rm -rf  PhpStorm-139.1348
+ 1820  ls -l
+ 1821  cd ../
+ 1822  ls
+ 1823  cd PhpStorm-139.1348/bin
+ 1824  ./phpstorm.sh &
+ 1825  cd ../
+ 1826  cd ..
+ 1827  find . -name test
+ 1828  cd github/
+ 1829  ls
+ 1830  php7 find.php
+ 1831  ls -a /root/
+ 1832  vi /root/.gdbinit
+ 1833  ls -a /root/
+ 1834  gedit /root/.gdbinit
+ 1835  gdb /root/php7d/bin/php
+ 1836  gdb /root/php7d/bin/php
+ 1837  gedit /root/.gdbinit
+ 1838  gdb /root/php7d/bin/php
+ 1839  gedit /root/.gdbinit
+ 1840  gdb /root/php7d/bin/php
+ 1841  ls
+ 1842  cd 下载
+ 1843  ls
+ 1844  tar -zvxf php-5.4.40.tar.gz 
+ 1845  ls
+ 1846  mv php-5.4.40 /root/download/
+ 1847  cd /root/download/
+ 1848  ls
+ 1849  cd php-5.4.40/
+ 1850  ls
+ 1851  ./configure --help
+ 1852  ./configure --prefix=/root/php5d --enable-debug
+ 1853  make && make install
+ 1854  ls ext/
+ 1855  cp -R /home/yaoguai/下载/xhprof-0.9.4/xhprof-0.9.4/extension /root/download/php-5.4.40/ext/xhprof
+ 1856  ls ext
+ 1857  ls ext/xhprof/
+ 1858  cd ext/xhprof/
+ 1859  ls /root/php5d/bin
+ 1860  /root/php5d/bin/phpize --with-php-config=/root/php5d/bin/php-config
+ 1861  ls
+ 1862  make && make install
+ 1863  ./configure --with-php-config=/root/php5d/bin/php-config
+ 1864  make
+ 1865  make install
+ 1866  php -i
+ 1867  cd ../
+ 1868  /root/php5d/bin/php -i
+ 1869  /root/php5d/bin/php -i | head 40
+ 1870  /root/php5d/bin/php -i | head
+ 1871  cd ..
+ 1872  ls
+ 1873  cp php.ini-production /root/php5d/lib/php.ini
+ 1874  cd /root/php5d/lib
+ 1875  ls
+ 1876  vi php.ini
+ 1877  ls
+ 1878  cd php
+ 1879  ls
+ 1880  cd ../
+ 1881  cd ..
+ 1882  find . -name xhprof
+ 1883  find . -name *.so
+ 1884  ls
+ 1885  mkdir xhprof
+ 1886  ls
+ 1887  cp -R /home/yaoguai/下载/xhprof-0.9.4/xhprof-0.9.4/xhprof_lib /root/php5d/xhprof/
+ 1888  cd xhprof/
+ 1889  ls
+ 1890  vi test.php
+ 1891  gedit test.php
+ 1892  cd /root/download/php-5.4.40/ex
+ 1893  cd /root/download/php-5.4.40/ext
+ 1894  ls
+ 1895  mv xhprof xhprof.bak
+ 1896  ls
+ 1897  git clone git@github.com:Yaoguais/phpng-xhprof.git ./xhprof
+ 1898  ls
+ 1899  cd xhprof
+ 1900  ls
+ 1901  ls -a
+ 1902  mv .git ../xhprof.bak/
+ 1903  mv README.md ../xhprof.bak/
+ 1904  ls -a
+ 1905  cd ..
+ 1906  ls
+ 1907  rm -rf xhprof
+ 1908  ls
+ 1909  mv xhprof.bak xhprof
+ 1910  ls
+ 1911  cd xhprof/
+ 1912  ls
+ 1913  git add .
+ 1914  git commit -m "init"
+ 1915  git push origin master
+ 1916  ls
+ 1917  cd /root
+ 1918  ls
+ 1919  ls -l
+ 1920  chown -R yaoguai:root /root
+ 1921  ls -l
+ 1922  ls -al /root
+ 1923  chown root:root /root/.*
+ 1924  ls -al /root
+ 1925  ls -l /root
+ 1926  ls -l /
+ 1927  chown yaoguai:root /root
+ 1928  ls -l /
+ 1929  history >> /root/history.txt
