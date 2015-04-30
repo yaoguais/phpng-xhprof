@@ -32,4 +32,4 @@ dlopen=''
 dlpreopen=''
 
 # Directory that this library needs to be installed in:
-libdir='/root/download/php-5.4.40/ext/xhprof/modules'
+libdir='/root/download/php-src-master/ext/xhprof/modules'

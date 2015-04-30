@@ -1,19 +1,22 @@
 /*
- *  Copyright (c) 2009 Facebook
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- *
- */
+  +----------------------------------------------------------------------+
+  | PHP Version 7                                                        |
+  +----------------------------------------------------------------------+
+  | Copyright (c) 1997-2015 The PHP Group                                |
+  +----------------------------------------------------------------------+
+  | This source file is subject to version 3.01 of the PHP license,      |
+  | that is bundled with this package in the file LICENSE, and is        |
+  | available through the world-wide-web at the following url:           |
+  | http://www.php.net/license/3_01.txt                                  |
+  | If you did not receive a copy of the PHP license and are unable to   |
+  | obtain it through the world-wide-web, please send a note to          |
+  | license@php.net so we can mail you a copy immediately.               |
+  +----------------------------------------------------------------------+
+  | Author:                                                              |
+  +----------------------------------------------------------------------+
+*/
+
+/* $Id$ */
 
 #ifndef PHP_XHPROF_H
 #define PHP_XHPROF_H
@@ -22,9 +25,11 @@ extern zend_module_entry xhprof_module_entry;
 #define phpext_xhprof_ptr &xhprof_module_entry
 
 #ifdef PHP_WIN32
-#define PHP_XHPROF_API __declspec(dllexport)
+#	define PHP_XHPROF_API __declspec(dllexport)
+#elif defined(__GNUC__) && __GNUC__ >= 4
+#	define PHP_XHPROF_API __attribute__ ((visibility("default")))
 #else
-#define PHP_XHPROF_API
+#	define PHP_XHPROF_API
 #endif
 
 #ifdef ZTS
@@ -43,3 +48,14 @@ PHP_FUNCTION(xhprof_sample_enable);
 PHP_FUNCTION(xhprof_sample_disable);
 
 #endif	/* PHP_XHPROF_H */
+
+/*
+ * Local variables:
+ * tab-width: 4
+ * c-basic-offset: 4
+ * End:
+ * vim600: noet sw=4 ts=4 fdm=marker
+ * vim<600: noet sw=4 ts=4
+ */
+// /root/download/php-src-master/ext/xhprof
+// /root/php7d/bin/php /root/php7d/xhprof/sample.php

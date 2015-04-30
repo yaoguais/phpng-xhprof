@@ -3,5 +3,6 @@
 # Created by configure
 
 './configure' \
-'--with-php-config=/root/php5d/bin/php-config' \
+'--with-php-config=/root/php7d/bin/php-config' \
+'--with-xhprof' \
 "$@"

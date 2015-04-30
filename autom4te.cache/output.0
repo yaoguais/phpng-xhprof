@@ -853,7 +853,7 @@ ac_user_opts='
 enable_option_checking
 with_libdir
 with_php_config
-enable_xhprof
+with_xhprof
 enable_shared
 enable_static
 enable_fast_install
@@ -1487,14 +1487,16 @@ Optional Features and Packages:
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-libdir=NAME      Look for libraries in .../NAME rather than .../lib
   --with-php-config=PATH  Path to php-config php-config
- --enable-xhprof      Enable xhprof support
-  --enable-shared=PKGS  build shared libraries default=yes
-  --enable-static=PKGS  build static libraries default=yes
-  --enable-fast-install=PKGS  optimize for fast installation default=yes
-  --with-gnu-ld           assume the C compiler uses GNU ld default=no
-  --disable-libtool-lock  avoid locking (might break parallel builds)
-  --with-pic              try to use only PIC/non-PIC objects default=use both
-  --with-tags=TAGS      include additional configurations automatic
+Make sure that the comment is aligned:
+  --with-xhprof             Include xhprof support
+  --enable-shared=PKGS    Build shared libraries default=yes
+  --enable-static=PKGS    Build static libraries default=yes
+  --enable-fast-install=PKGS
+                          Optimize for fast installation default=yes
+  --with-gnu-ld           Assume the C compiler uses GNU ld default=no
+  --disable-libtool-lock  Avoid locking (might break parallel builds)
+  --with-pic              Try to use only PIC/non-PIC objects default=use both
+  --with-tags=TAGS        Include additional configurations automatic
 
 
 Some influential environment variables:
@@ -2516,14 +2518,14 @@ EOF
   fi
   for arg in $ac_configure_args; do
     if test `expr -- $arg : "'.*"` = 0; then
-      if test `expr -- $arg : "--.*"` = 0; then
-        break;
+      if test `expr -- $arg : "-.*"` = 0 && test `expr -- $arg : ".*=.*"` = 0; then
+        continue;
       fi
       echo "'$arg' \\" >> config.nice
       CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS '$arg'"
     else
-      if test `expr -- $arg : "'--.*"` = 0; then
-        break;
+      if test `expr -- $arg : "'-.*"` = 0 && test `expr -- $arg : "'.*=.*"` = 0; then
+        continue;
       fi
       echo "$arg \\" >> config.nice
       CONFIGURE_OPTIONS="$CONFIGURE_OPTIONS $arg"
@@ -4046,13 +4048,16 @@ $as_echo "no" >&6; }
 
 
 
-php_enable_xhprof=no
 
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether to enable xhprof support" >&5
-$as_echo_n "checking whether to enable xhprof support... " >&6; }
-@%:@ Check whether --enable-xhprof was given.
-if test "${enable_xhprof+set}" = set; then :
-  enableval=$enable_xhprof; PHP_XHPROF=$enableval
+
+php_with_xhprof=no
+
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for xhprof support" >&5
+$as_echo_n "checking for xhprof support... " >&6; }
+
+@%:@ Check whether --with-xhprof was given.
+if test "${with_xhprof+set}" = set; then :
+  withval=$with_xhprof; PHP_XHPROF=$withval
 else
   
   PHP_XHPROF=no
@@ -4093,12 +4098,19 @@ $as_echo "$ext_output" >&6; }
 
 
 
+
+
 if test "$PHP_XHPROF" != "no"; then
+  
+                                      
+    
+      
+                      
   
   ext_builddir=.
   ext_srcdir=$abs_srcdir
 
-  ac_extra=
+  ac_extra=`echo "-DZEND_ENABLE_STATIC_TSRMLS_CACHE=1"|$SED s#@ext_srcdir@#$ext_srcdir#g|$SED s#@ext_builddir@#$ext_builddir#g`
 
   if test "$ext_shared" != "shared" && test "$ext_shared" != "yes" && test "" != "cli"; then
     PHP_XHPROF_SHARED=no
@@ -4205,7 +4217,7 @@ EOF
       ;;
     *netware*)
       suffix=nlm
-      link_cmd='$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -shared -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_xhprof) -L$(top_builddir)/netware -lphp5lib $(XHPROF_SHARED_LIBADD)'
+      link_cmd='$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -shared -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_xhprof) -L$(top_builddir)/netware -lphp7lib $(XHPROF_SHARED_LIBADD)'
       ;;
     *)
       suffix=la
@@ -4242,7 +4254,7 @@ EOF
       ;;
     *netware*)
       suffix=nlm
-      link_cmd='$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -shared -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_xhprof) -L$(top_builddir)/netware -lphp5lib $(ROF_SHARED_LIBADD)'
+      link_cmd='$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -shared -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_xhprof) -L$(top_builddir)/netware -lphp7lib $(ROF_SHARED_LIBADD)'
       ;;
     *)
       suffix=la
@@ -4932,7 +4944,7 @@ ia64-*-hpux*)
   rm -rf conftest*
   ;;
 
-x86_64-*kfreebsd*-gnu|x86_64-*linux*|ppc*-*linux*|powerpc*-*linux*| \
+x86_64-*kfreebsd*-gnu|x86_64-*linux*|powerpc*-*linux*| \
 s390*-*linux*|sparc*-*linux*)
   # Find out which ABI we are using.
   echo 'int i;' > conftest.$ac_ext
@@ -4950,7 +4962,10 @@ s390*-*linux*|sparc*-*linux*)
         x86_64-*linux*)
           LD="${LD-ld} -m elf_i386"
           ;;
-        ppc64-*linux*|powerpc64-*linux*)
+        powerpc64le-*linux*)
+          LD="${LD-ld} -m elf32lppclinux"
+          ;;
+        powerpc64-*linux*)
           LD="${LD-ld} -m elf32ppclinux"
           ;;
         s390x-*linux*)
@@ -4969,7 +4984,10 @@ s390*-*linux*|sparc*-*linux*)
         x86_64-*linux*)
           LD="${LD-ld} -m elf_x86_64"
           ;;
-        ppc*-*linux*|powerpc*-*linux*)
+        powerpcle-*linux*)
+          LD="${LD-ld} -m elf64lppc"
+          ;;
+        powerpc-*linux*)
           LD="${LD-ld} -m elf64ppc"
           ;;
         s390*-*linux*)

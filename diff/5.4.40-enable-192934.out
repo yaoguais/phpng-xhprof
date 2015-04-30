@@ -1,0 +1,122 @@
+array (
+  'main()==>load::lib.php' => 
+  array (
+    'ct' => 1,
+    'wt' => 306,
+    'cpu' => 323,
+    'mu' => 6664,
+    'pmu' => 8552,
+  ),
+  'main()==>run_init::xhprof/lib.php' => 
+  array (
+    'ct' => 1,
+    'wt' => 5,
+    'cpu' => 10,
+    'mu' => 1464,
+    'pmu' => 0,
+  ),
+  'main()==>strlen' => 
+  array (
+    'ct' => 1,
+    'wt' => 5,
+    'cpu' => 11,
+    'mu' => 1448,
+    'pmu' => 0,
+  ),
+  'main()==>str_replace' => 
+  array (
+    'ct' => 1,
+    'wt' => 15,
+    'cpu' => 20,
+    'mu' => 1744,
+    'pmu' => 960,
+  ),
+  'main()==>eval::/root/php7d/xhprof/enable.php(22) : eval()\'d code' => 
+  array (
+    'ct' => 1,
+    'wt' => 26,
+    'cpu' => 32,
+    'mu' => 2768,
+    'pmu' => 4896,
+  ),
+  'main()==>eval' => 
+  array (
+    'ct' => 1,
+    'wt' => 3,
+    'cpu' => 7,
+    'mu' => 1448,
+    'pmu' => 0,
+  ),
+  'foo==>bar' => 
+  array (
+    'ct' => 5,
+    'wt' => 121,
+    'cpu' => 129,
+    'mu' => 9624,
+    'pmu' => 9448,
+  ),
+  'foo==>strlen' => 
+  array (
+    'ct' => 5,
+    'wt' => 11,
+    'cpu' => 18,
+    'mu' => 1448,
+    'pmu' => 1448,
+  ),
+  'bar==>bar@1' => 
+  array (
+    'ct' => 4,
+    'wt' => 78,
+    'cpu' => 85,
+    'mu' => 7528,
+    'pmu' => 7648,
+  ),
+  'bar@1==>bar@2' => 
+  array (
+    'ct' => 3,
+    'wt' => 43,
+    'cpu' => 49,
+    'mu' => 5464,
+    'pmu' => 5880,
+  ),
+  'bar@2==>bar@3' => 
+  array (
+    'ct' => 2,
+    'wt' => 21,
+    'cpu' => 26,
+    'mu' => 3456,
+    'pmu' => 3664,
+  ),
+  'bar@3==>bar@4' => 
+  array (
+    'ct' => 1,
+    'wt' => 2,
+    'cpu' => 6,
+    'mu' => 1448,
+    'pmu' => 1448,
+  ),
+  'main()==>foo' => 
+  array (
+    'ct' => 1,
+    'wt' => 210,
+    'cpu' => 214,
+    'mu' => 13744,
+    'pmu' => 13344,
+  ),
+  'main()==>xhprof_disable' => 
+  array (
+    'ct' => 1,
+    'wt' => 2,
+    'cpu' => 7,
+    'mu' => 1456,
+    'pmu' => 1272,
+  ),
+  'main()' => 
+  array (
+    'ct' => 1,
+    'wt' => 819,
+    'cpu' => 824,
+    'mu' => 33936,
+    'pmu' => 32024,
+  ),
+)

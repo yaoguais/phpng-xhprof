@@ -1,11 +1,11 @@
-srcdir = /root/download/php-5.4.40/ext/xhprof
-builddir = /root/download/php-5.4.40/ext/xhprof
-top_srcdir = /root/download/php-5.4.40/ext/xhprof
-top_builddir = /root/download/php-5.4.40/ext/xhprof
+srcdir = /root/download/php-src-master/ext/xhprof
+builddir = /root/download/php-src-master/ext/xhprof
+top_srcdir = /root/download/php-src-master/ext/xhprof
+top_builddir = /root/download/php-src-master/ext/xhprof
 EGREP = /bin/grep -E
 SED = /bin/sed
-CONFIGURE_COMMAND = './configure' '--with-php-config=/root/php5d/bin/php-config'
-CONFIGURE_OPTIONS = '--with-php-config=/root/php5d/bin/php-config'
+CONFIGURE_COMMAND = './configure' '--with-php-config=/root/php7d/bin/php-config' '--with-xhprof'
+CONFIGURE_OPTIONS = '--with-php-config=/root/php7d/bin/php-config' '--with-xhprof'
 SHLIB_SUFFIX_NAME = so
 SHLIB_DL_SUFFIX_NAME = so
 ZEND_EXT_TYPE = zend_extension
@@ -17,12 +17,12 @@ PHP_MODULES = $(phplibdir)/xhprof.la
 PHP_ZEND_EX =
 all_targets = $(PHP_MODULES) $(PHP_ZEND_EX)
 install_targets = install-modules install-headers
-prefix = /root/php5d
+prefix = /root/php7d
 exec_prefix = $(prefix)
 libdir = ${exec_prefix}/lib
-prefix = /root/php5d
-phplibdir = /root/download/php-5.4.40/ext/xhprof/modules
-phpincludedir = /root/php5d/include/php
+prefix = /root/php7d
+phplibdir = /root/download/php-src-master/ext/xhprof/modules
+phpincludedir = /root/php7d/include/php
 CC = cc
 CFLAGS = -g -O0
 CFLAGS_CLEAN = $(CFLAGS)
@@ -31,11 +31,11 @@ CPPFLAGS = -DHAVE_CONFIG_H
 CXX =
 CXXFLAGS = -g -O0
 CXXFLAGS_CLEAN = $(CXXFLAGS)
-EXTENSION_DIR = /root/php5d/lib/php/extensions/debug-non-zts-20100525
-PHP_EXECUTABLE = /root/php5d/bin/php
+EXTENSION_DIR = /root/php7d/lib/php/extensions/debug-non-zts-20141001
+PHP_EXECUTABLE = /root/php7d/bin/php
 EXTRA_LDFLAGS =
 EXTRA_LIBS =
-INCLUDES = -I/root/php5d/include/php -I/root/php5d/include/php/main -I/root/php5d/include/php/TSRM -I/root/php5d/include/php/Zend -I/root/php5d/include/php/ext -I/root/php5d/include/php/ext/date/lib
+INCLUDES = -I/root/php7d/include/php -I/root/php7d/include/php/main -I/root/php7d/include/php/TSRM -I/root/php7d/include/php/Zend -I/root/php7d/include/php/ext -I/root/php7d/include/php/ext/date/lib
 LFLAGS =
 LDFLAGS =
 SHARED_LIBTOOL =
@@ -130,7 +130,7 @@ PHP_TEST_SHARED_EXTENSIONS =  ` \
 PHP_DEPRECATED_DIRECTIVES_REGEX = '^(magic_quotes_(gpc|runtime|sybase)?|(zend_)?extension(_debug)?(_ts)?)[\t\ ]*='
 
 test: all
-	-@if test ! -z "$(PHP_EXECUTABLE)" && test -x "$(PHP_EXECUTABLE)"; then \
+	@if test ! -z "$(PHP_EXECUTABLE)" && test -x "$(PHP_EXECUTABLE)"; then \
 		INI_FILE=`$(PHP_EXECUTABLE) -d 'display_errors=stderr' -r 'echo php_ini_loaded_file();' 2> /dev/null`; \
 		if test "$$INI_FILE"; then \
 			$(EGREP) -h -v $(PHP_DEPRECATED_DIRECTIVES_REGEX) "$$INI_FILE" > $(top_builddir)/tmp-php.ini; \
@@ -146,7 +146,9 @@ test: all
 		TEST_PHP_SRCDIR=$(top_srcdir) \
 		CC="$(CC)" \
 			$(PHP_EXECUTABLE) -n -c $(top_builddir)/tmp-php.ini $(PHP_TEST_SETTINGS) $(top_srcdir)/run-tests.php -n -c $(top_builddir)/tmp-php.ini -d extension_dir=$(top_builddir)/modules/ $(PHP_TEST_SHARED_EXTENSIONS) $(TESTS); \
+		TEST_RESULT_EXIT_CODE=$$?; \
 		rm $(top_builddir)/tmp-php.ini; \
+		exit $$TEST_RESULT_EXIT_CODE; \
 	else \
 		echo "ERROR: Cannot run tests without CLI sapi."; \
 	fi
@@ -157,17 +159,25 @@ clean:
 	find . -name \*.la -o -name \*.a | xargs rm -f 
 	find . -name \*.so | xargs rm -f
 	find . -name .libs -a -type d|xargs rm -rf
-	find . -name \*.1 | xargs rm -f
-	rm -f libphp$(PHP_MAJOR_VERSION).la $(SAPI_CLI_PATH) $(OVERALL_TARGET) modules/* libs/*
+	rm -f libphp$(PHP_MAJOR_VERSION).la $(SAPI_CLI_PATH) $(SAPI_CGI_PATH) $(SAPI_MILTER_PATH) $(SAPI_LITESPEED_PATH) $(SAPI_FPM_PATH) $(OVERALL_TARGET) modules/* libs/*
 
 distclean: clean
-	rm -f Makefile config.cache config.log config.status Makefile.objects Makefile.fragments libtool main/php_config.h stamp-h sapi/apache/libphp$(PHP_MAJOR_VERSION).module buildmk.stamp Zend/zend_dtrace_gen.h Zend/zend_dtrace_gen.h.bak
+	rm -f Makefile config.cache config.log config.status Makefile.objects Makefile.fragments libtool main/php_config.h main/internal_functions_cli.c main/internal_functions.c stamp-h sapi/apache/libphp$(PHP_MAJOR_VERSION).module sapi/apache_hooks/libphp$(PHP_MAJOR_VERSION).module buildmk.stamp Zend/zend_dtrace_gen.h Zend/zend_dtrace_gen.h.bak Zend/zend_config.h TSRM/tsrm_config.h
+	rm -f php7.spec main/build-defs.h scripts/phpize
+	rm -f ext/date/lib/timelib_config.h ext/mbstring/oniguruma/config.h ext/mbstring/libmbfl/config.h ext/oci8/oci8_dtrace_gen.h ext/oci8/oci8_dtrace_gen.h.bak
+	rm -f scripts/man1/phpize.1 scripts/php-config scripts/man1/php-config.1 sapi/cli/php.1 sapi/cgi/php-cgi.1 ext/phar/phar.1 ext/phar/phar.phar.1
+	rm -f sapi/fpm/php-fpm.conf sapi/fpm/init.d.php-fpm sapi/fpm/php-fpm.service sapi/fpm/php-fpm.8 sapi/fpm/status.html
+	rm -f ext/iconv/php_have_bsd_iconv.h ext/iconv/php_have_glibc_iconv.h ext/iconv/php_have_ibm_iconv.h ext/iconv/php_have_iconv.h ext/iconv/php_have_libiconv.h ext/iconv/php_iconv_aliased_libiconv.h ext/iconv/php_iconv_supports_errno.h ext/iconv/php_php_iconv_h_path.h ext/iconv/php_php_iconv_impl.h
+	rm -f ext/phar/phar.phar ext/phar/phar.php
+	if test "$(srcdir)" != "$(builddir)"; then \
+	  rm -f ext/phar/phar/phar.inc; \
+	fi
 	$(EGREP) define'.*include/php' $(top_srcdir)/configure | $(SED) 's/.*>//'|xargs rm -f
 
 .PHONY: all clean install distclean test
 .NOEXPORT:
-xhprof.lo: /root/download/php-5.4.40/ext/xhprof/xhprof.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/root/download/php-5.4.40/ext/xhprof $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /root/download/php-5.4.40/ext/xhprof/xhprof.c -o xhprof.lo 
+xhprof.lo: /root/download/php-src-master/ext/xhprof/xhprof.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/root/download/php-src-master/ext/xhprof $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /root/download/php-src-master/ext/xhprof/xhprof.c -o xhprof.lo 
 $(phplibdir)/xhprof.la: ./xhprof.la
 	$(LIBTOOL) --mode=install cp ./xhprof.la $(phplibdir)
 

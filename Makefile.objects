@@ -1,5 +1,5 @@
-xhprof.lo: /root/download/php-5.4.40/ext/xhprof/xhprof.c
-	$(LIBTOOL) --mode=compile $(CC)  -I. -I/root/download/php-5.4.40/ext/xhprof $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /root/download/php-5.4.40/ext/xhprof/xhprof.c -o xhprof.lo 
+xhprof.lo: /root/download/php-src-master/ext/xhprof/xhprof.c
+	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/root/download/php-src-master/ext/xhprof $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /root/download/php-src-master/ext/xhprof/xhprof.c -o xhprof.lo 
 $(phplibdir)/xhprof.la: ./xhprof.la
 	$(LIBTOOL) --mode=install cp ./xhprof.la $(phplibdir)
 
