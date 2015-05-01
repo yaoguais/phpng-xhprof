@@ -925,8 +925,8 @@ static const char *hp_get_base_filename(const char *filename) {
  *
  * @author kannan, hzhao
  */
-static char *hp_get_function_name(zend_execute_data *execute_data TSRMLS_DC) {
-  zend_execute_data *data = execute_data;
+static char *hp_get_function_name(zend_execute_data *data TSRMLS_DC) {
+  zend_execute_data * execute_data;
   const char        *func = NULL;
   const char        *cls = NULL;
   char              *ret = NULL;
@@ -961,6 +961,58 @@ static char *hp_get_function_name(zend_execute_data *execute_data TSRMLS_DC) {
       } else {
         ret = estrdup(func);
       }
+    }else if(data->prev_execute_data){
+    	/*
+		 * we are dealing with a special directive/function like
+		 * include, eval, etc.
+		 */
+    	execute_data = data->prev_execute_data;
+		long curr_op = execute_data->opline->extended_value;
+		int      add_filename = 0;
+
+		switch (curr_op) {
+			case ZEND_EVAL:
+			  func = "eval";
+			  break;
+			case ZEND_INCLUDE:
+			  func = "include";
+			  add_filename = 1;
+			  break;
+			case ZEND_REQUIRE:
+			  func = "require";
+			  add_filename = 1;
+			  break;
+			case ZEND_INCLUDE_ONCE:
+			  func = "include_once";
+			  add_filename = 1;
+			  break;
+			case ZEND_REQUIRE_ONCE:
+			  func = "require_once";
+			  add_filename = 1;
+			  break;
+			default:
+			  func = NULL;
+			  break;
+		}
+
+		/* For some operations, we'll add the filename as part of the function
+		* name to make the reports more useful. So rather than just "include"
+		* you'll see something like "run_init::foo.php" in your reports.
+		*/
+		if(func){
+			if (add_filename){
+				const zend_op *opline = ((execute_data)->opline);
+				zval *inc_filename = EX_CONSTANT(opline->op1);
+				if (Z_TYPE_P(inc_filename) == IS_STRING) {
+					const char * filename = hp_get_base_filename(Z_STRVAL_P(inc_filename));
+					len      = strlen("run_init") + strlen(filename) + 3;
+					ret      = (char *)emalloc(len);
+					snprintf(ret, len, "run_init::%s", filename);
+				}
+			} else {
+				ret = estrdup(func);
+			}
+		}
     }
   }
   return ret;
@@ -1667,80 +1719,30 @@ ZEND_API void execute_ex_replace(zend_execute_data *execute_data)
 			funcName = NULL;
 			func = NULL;
 			cls = NULL;
-			/*
-			 * 暂时取消这个功能，因为它主要是为了获取解析文件路径所花费的时间，没有太大必要
-			 * we are dealing with a special directive/function like
-			 * include, eval, etc.
-			 */
-			/*long curr_op = execute_data->opline->extended_value;
-			int      add_filename = 0;
 
-			switch (curr_op) {
-				case ZEND_EVAL:
-				  func = "eval";
-				  break;
-				case ZEND_INCLUDE:
-				  func = "include";
-				  add_filename = 1;
-				  break;
-				case ZEND_REQUIRE:
-				  func = "require";
-				  add_filename = 1;
-				  break;
-				case ZEND_INCLUDE_ONCE:
-				  func = "include_once";
-				  add_filename = 1;
-				  break;
-				case ZEND_REQUIRE_ONCE:
-				  func = "require_once";
-				  add_filename = 1;
-				  break;
-				default:
-				  func = NULL;
-				  break;
-			}*/
-
-			/* For some operations, we'll add the filename as part of the function
-			* name to make the reports more useful. So rather than just "include"
-			* you'll see something like "run_init::foo.php" in your reports.
-			*/
-			/*if(func){
-				if (add_filename){
-					const zend_op *opline = ((execute_data)->opline);
-					zval *inc_filename = EX_CONSTANT(opline->op1);
-					if (Z_TYPE_P(inc_filename) == IS_STRING) {
-						const char * filename = hp_get_base_filename(Z_STRVAL_P(inc_filename));
-						len      = strlen("run_init") + strlen(filename) + 3;
-						funcName      = (char *)emalloc(len);
-						snprintf(funcName, len, "run_init::%s", filename);
-					}
-				} else {
-					funcName = estrdup(func);
-				}
-			}else{*/
-				opcode = execute_data->opline->opcode;
-				switch(opcode){
-					case ZEND_STRLEN :
-						funcName = estrdup("strlen");
-					break;
-					case ZEND_DO_ICALL :
-						internal_function = execute_data->call->func->internal_function;
-						if(internal_function.function_name){
-							func = internal_function.function_name->val;
-							if(internal_function.scope){
-								cls = internal_function.scope->name->val;
-							}
-							if (cls) {
-								len = strlen(cls) + strlen(func) + 10;
-								funcName = (char*)emalloc(len);
-								snprintf(funcName, len, "%s::%s", cls, func);
-							} else {
-								funcName = estrdup(func);
-							}
+			opcode = execute_data->opline->opcode;
+			switch(opcode){
+				case ZEND_STRLEN :
+					funcName = estrdup("strlen");
+				break;
+				case ZEND_DO_ICALL :
+					internal_function = execute_data->call->func->internal_function;
+					if(internal_function.function_name){
+						func = internal_function.function_name->val;
+						if(internal_function.scope){
+							cls = internal_function.scope->name->val;
 						}
-					break;
-				}
-			//}
+						if (cls) {
+							len = strlen(cls) + strlen(func) + 10;
+							funcName = (char*)emalloc(len);
+							snprintf(funcName, len, "%s::%s", cls, func);
+						} else {
+							funcName = estrdup(func);
+						}
+					}
+				break;
+			}
+
 			if(funcName){
 				BEGIN_PROFILING(&hp_globals.entries, funcName, hp_profile_flag);
 			}
@@ -1811,8 +1813,6 @@ ZEND_DLEXPORT void hp_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
 
 ZEND_DLEXPORT void hp_execute_internal(zend_execute_data *execute_data, zval *return_value) {
 
-
-  printf("\nhp_execute_internal called\n");
   zend_execute_data *current_data = execute_data;
   char             *func = NULL;
   int    hp_profile_flag = 1;
