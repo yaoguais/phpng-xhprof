@@ -1003,11 +1003,19 @@ static char *hp_get_function_name(zend_execute_data *data TSRMLS_DC) {
 			if (add_filename){
 				const zend_op *opline = ((execute_data)->opline);
 				zval *inc_filename = EX_CONSTANT(opline->op1);
+				zend_string * resolved_path;
 				if (Z_TYPE_P(inc_filename) == IS_STRING) {
-					const char * filename = hp_get_base_filename(Z_STRVAL_P(inc_filename));
+					resolved_path = zend_resolve_path(Z_STRVAL_P(inc_filename), (int)Z_STRLEN_P(inc_filename));
+					if (!resolved_path) {
+						resolved_path = zend_string_copy(Z_STR_P(inc_filename));
+					}
+					const char * filename = hp_get_base_filename(resolved_path->val);
 					len      = strlen("run_init") + strlen(filename) + 3;
 					ret      = (char *)emalloc(len);
 					snprintf(ret, len, "run_init::%s", filename);
+				}
+				if(resolved_path){
+					zend_string_release(resolved_path);
 				}
 			} else {
 				ret = estrdup(func);
