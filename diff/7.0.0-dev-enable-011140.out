@@ -2,16 +2,24 @@ array (
   'main()==>load::lib.php' => 
   array (
     'ct' => 1,
-    'wt' => 122,
-    'cpu' => 128,
+    'wt' => 125,
+    'cpu' => 132,
     'mu' => 4448,
     'pmu' => 3712,
+  ),
+  'main()==>run_init::xhprof/lib.php' => 
+  array (
+    'ct' => 1,
+    'wt' => 2,
+    'cpu' => 3,
+    'mu' => 704,
+    'pmu' => 0,
   ),
   'main()==>strlen' => 
   array (
     'ct' => 1,
     'wt' => 2,
-    'cpu' => 3,
+    'cpu' => 2,
     'mu' => 688,
     'pmu' => 0,
   ),
@@ -19,7 +27,7 @@ array (
   array (
     'ct' => 1,
     'wt' => 7,
-    'cpu' => 9,
+    'cpu' => 8,
     'mu' => 688,
     'pmu' => 0,
   ),
@@ -27,8 +35,16 @@ array (
   array (
     'ct' => 1,
     'wt' => 8,
-    'cpu' => 9,
+    'cpu' => 10,
     'mu' => 1408,
+    'pmu' => 280,
+  ),
+  'main()==>eval' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 3,
+    'mu' => 688,
     'pmu' => 0,
   ),
   'foo==>bar' => 
@@ -42,8 +58,8 @@ array (
   'foo==>strlen' => 
   array (
     'ct' => 1,
-    'wt' => 1,
-    'cpu' => 2,
+    'wt' => 0,
+    'cpu' => 3,
     'mu' => 688,
     'pmu' => 0,
   ),
@@ -51,8 +67,8 @@ array (
   array (
     'ct' => 1,
     'wt' => 1,
-    'cpu' => 3,
-    'mu' => 688,
+    'cpu' => 2,
+    'mu' => 1008,
     'pmu' => 0,
   ),
   'bar@1==>bar@2' => 
@@ -66,9 +82,9 @@ array (
   'bar@2==>bar@3' => 
   array (
     'ct' => 1,
-    'wt' => 1,
-    'cpu' => 3,
-    'mu' => 1008,
+    'wt' => 0,
+    'cpu' => 1,
+    'mu' => 688,
     'pmu' => 0,
   ),
   'bar@3==>bar@4' => 
@@ -82,15 +98,15 @@ array (
   'main()==>foo' => 
   array (
     'ct' => 1,
-    'wt' => 64,
-    'cpu' => 66,
+    'wt' => 60,
+    'cpu' => 61,
     'mu' => 5904,
     'pmu' => 0,
   ),
   'main()==>xhprof_disable' => 
   array (
     'ct' => 1,
-    'wt' => 1,
+    'wt' => 0,
     'cpu' => 2,
     'mu' => 688,
     'pmu' => 0,
@@ -98,9 +114,9 @@ array (
   'main()' => 
   array (
     'ct' => 1,
-    'wt' => 302,
-    'cpu' => 302,
-    'mu' => 13576,
-    'pmu' => 3712,
+    'wt' => 332,
+    'cpu' => 320,
+    'mu' => 15224,
+    'pmu' => 3992,
   ),
 )
