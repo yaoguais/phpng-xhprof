@@ -448,6 +448,9 @@ PHP_MINIT_FUNCTION(xhprof) {
   /*init global enable*/
   hp_globals.enabled = 0;
 
+  /*init hp_globals xhprof_flags*/
+  hp_globals.xhprof_flags = 0;
+
   /*replace original zend_execute_ex*/
   zend_execute_ex = execute_ex_replace;
 
@@ -1721,8 +1724,8 @@ ZEND_API void execute_ex_replace(zend_execute_data *execute_data)
 		}
 #endif
 
-
-		if(hp_globals.enabled){
+		/* FIX NO BUILTINS*/
+		if(hp_globals.enabled && (!(hp_globals.xhprof_flags & XHPROF_FLAGS_NO_BUILTINS))){
 
 			funcName = NULL;
 			func = NULL;
