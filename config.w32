@@ -1,0 +1,13 @@
+// $Id$
+// vim:ft=javascript
+
+// If your extension references something external, use ARG_WITH
+// ARG_WITH("phpng_xhprof", "for phpng_xhprof support", "no");
+
+// Otherwise, use ARG_ENABLE
+// ARG_ENABLE("phpng_xhprof", "enable phpng_xhprof support", "no");
+
+if (PHP_PHPNG_XHPROF != "no") {
+	EXTENSION("phpng_xhprof", "phpng_xhprof.c", PHP_EXTNAME_SHARED, "/DZEND_ENABLE_STATIC_TSRMLS_CACHE=1");
+}
+
