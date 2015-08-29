@@ -1,8 +1,0 @@
-#! /bin/sh
-#
-# Created by configure
-
-'./configure' \
-'--with-php-config=/root/php7d/bin/php-config' \
-'--with-xhprof' \
-"$@"
