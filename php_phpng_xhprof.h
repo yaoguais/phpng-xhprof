@@ -12,7 +12,8 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:                                                              |
+  | Author:  Copyright (c) 2009 Facebook                                 |
+  |          newtopstdio@163.com                                         |
   +----------------------------------------------------------------------+
 */
 
@@ -24,7 +25,7 @@
 extern zend_module_entry phpng_xhprof_module_entry;
 #define phpext_phpng_xhprof_ptr &phpng_xhprof_module_entry
 
-#define PHP_PHPNG_XHPROF_VERSION "0.1.0" /* Replace with version number for your extension */
+
 
 #ifdef PHP_WIN32
 #	define PHP_PHPNG_XHPROF_API __declspec(dllexport)
@@ -38,21 +39,41 @@ extern zend_module_entry phpng_xhprof_module_entry;
 #include "TSRM.h"
 #endif
 
-/*
-  	Declare any global variables you may need between the BEGIN
-	and END macros here:
+/* global data types and type defines */
+#define PHP_PHPNG_XHPROF_VERSION   "0.9.5"
+#define ROOT_SYMBOL                "main()"
+#define SCRATCH_BUF_LEN            512
+#define XHPROF_MODE_HIERARCHICAL   1
+#define XHPROF_MODE_SAMPLED        620002         /* Rockfort's zip code           */
+#define XHPROF_FLAGS_NO_BUILTINS   0x0001         /* do not profile builtins       */
+#define XHPROF_FLAGS_CPU           0x0002         /* gather CPU times for funcs    */
+#define XHPROF_FLAGS_MEMORY        0x0004         /* gather memory usage for funcs */
+#define XHPROF_SAMPLING_INTERVAL   100000         /* In microsecs                  */
+#define XHPROF_MAX_IGNORED_FUNCTIONS  256
+#define XHPROF_IGNORED_FUNCTION_FILTER_SIZE       ((XHPROF_MAX_IGNORED_FUNCTIONS + 7)/8)
 
-ZEND_BEGIN_MODULE_GLOBALS(phpng_xhprof)
-	zend_long  global_value;
-	char *global_string;
-ZEND_END_MODULE_GLOBALS(phpng_xhprof)
-*/
+#if !defined(uint64)
+typedef unsigned long long uint64;
+#endif
+#if !defined(uint32)
+typedef unsigned int uint32;
+#endif
+#if !defined(uint8)
+typedef unsigned char uint8;
+#endif
 
-/* Always refer to the globals in your function as PHPNG_XHPROF_G(variable).
-   You are encouraged to rename these macros something shorter, see
-   examples in any other php module directory.
-*/
-#define PHPNG_XHPROF_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(phpng_xhprof, v)
+/*  php function declare */
+PHP_MINIT_FUNCTION(xhprof);
+PHP_MSHUTDOWN_FUNCTION(xhprof);
+PHP_RINIT_FUNCTION(xhprof);
+PHP_RSHUTDOWN_FUNCTION(xhprof);
+PHP_MINFO_FUNCTION(xhprof);
+
+PHP_FUNCTION(xhprof_enable);
+PHP_FUNCTION(xhprof_disable);
+PHP_FUNCTION(xhprof_sample_enable);
+PHP_FUNCTION(xhprof_sample_disable);
+
 
 #if defined(ZTS) && defined(COMPILE_DL_PHPNG_XHPROF)
 ZEND_TSRMLS_CACHE_EXTERN();

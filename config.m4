@@ -7,9 +7,9 @@ dnl without editing.
 
 dnl If your extension references something external, use with:
 
-dnl PHP_ARG_WITH(phpng_xhprof, for phpng_xhprof support,
+PHP_ARG_WITH(phpng_xhprof, for phpng_xhprof support,
 dnl Make sure that the comment is aligned:
-dnl [  --with-phpng_xhprof             Include phpng_xhprof support])
+[  --with-phpng_xhprof             Include phpng_xhprof support])
 
 dnl Otherwise use enable:
 
