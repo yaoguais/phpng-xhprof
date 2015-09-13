@@ -12,8 +12,7 @@
   | obtain it through the world-wide-web, please send a note to          |
   | license@php.net so we can mail you a copy immediately.               |
   +----------------------------------------------------------------------+
-  | Author:  Copyright (c) 2009 Facebook                                 |
-  |          newtopstdio@163.com                                         |
+  | Author:  Yaoguai (newtopdtdio@163.com)                               |
   +----------------------------------------------------------------------+
 */
 
@@ -25,7 +24,7 @@
 extern zend_module_entry phpng_xhprof_module_entry;
 #define phpext_phpng_xhprof_ptr &phpng_xhprof_module_entry
 
-
+#define PHP_PHPNG_XHPROF_VERSION "0.9.5"
 
 #ifdef PHP_WIN32
 #	define PHP_PHPNG_XHPROF_API __declspec(dllexport)
@@ -39,41 +38,7 @@ extern zend_module_entry phpng_xhprof_module_entry;
 #include "TSRM.h"
 #endif
 
-/* global data types and type defines */
-#define PHP_PHPNG_XHPROF_VERSION   "0.9.5"
-#define ROOT_SYMBOL                "main()"
-#define SCRATCH_BUF_LEN            512
-#define XHPROF_MODE_HIERARCHICAL   1
-#define XHPROF_MODE_SAMPLED        620002         /* Rockfort's zip code           */
-#define XHPROF_FLAGS_NO_BUILTINS   0x0001         /* do not profile builtins       */
-#define XHPROF_FLAGS_CPU           0x0002         /* gather CPU times for funcs    */
-#define XHPROF_FLAGS_MEMORY        0x0004         /* gather memory usage for funcs */
-#define XHPROF_SAMPLING_INTERVAL   100000         /* In microsecs                  */
-#define XHPROF_MAX_IGNORED_FUNCTIONS  256
-#define XHPROF_IGNORED_FUNCTION_FILTER_SIZE       ((XHPROF_MAX_IGNORED_FUNCTIONS + 7)/8)
-
-#if !defined(uint64)
-typedef unsigned long long uint64;
-#endif
-#if !defined(uint32)
-typedef unsigned int uint32;
-#endif
-#if !defined(uint8)
-typedef unsigned char uint8;
-#endif
-
-/*  php function declare */
-PHP_MINIT_FUNCTION(xhprof);
-PHP_MSHUTDOWN_FUNCTION(xhprof);
-PHP_RINIT_FUNCTION(xhprof);
-PHP_RSHUTDOWN_FUNCTION(xhprof);
-PHP_MINFO_FUNCTION(xhprof);
-
-PHP_FUNCTION(xhprof_enable);
-PHP_FUNCTION(xhprof_disable);
-PHP_FUNCTION(xhprof_sample_enable);
-PHP_FUNCTION(xhprof_sample_disable);
-
+#define PHPNG_XHPROF_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(phpng_xhprof, v)
 
 #if defined(ZTS) && defined(COMPILE_DL_PHPNG_XHPROF)
 ZEND_TSRMLS_CACHE_EXTERN();
