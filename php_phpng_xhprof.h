@@ -18,33 +18,37 @@
 
 /* $Id$ */
 
-#ifndef PHP_PHPNG_XHPROF_H
-#define PHP_PHPNG_XHPROF_H
+#ifndef PHP_XHPROF_H
+#define PHP_XHPROF_H
 
-extern zend_module_entry phpng_xhprof_module_entry;
-#define phpext_phpng_xhprof_ptr &phpng_xhprof_module_entry
-
-#define PHP_PHPNG_XHPROF_VERSION "0.9.5"
+extern zend_module_entry xhprof_module_entry;
+#define phpext_xhprof_ptr &xhprof_module_entry
 
 #ifdef PHP_WIN32
-#	define PHP_PHPNG_XHPROF_API __declspec(dllexport)
+#	define PHP_XHPROF_API __declspec(dllexport)
 #elif defined(__GNUC__) && __GNUC__ >= 4
-#	define PHP_PHPNG_XHPROF_API __attribute__ ((visibility("default")))
+#	define PHP_XHPROF_API __attribute__ ((visibility("default")))
 #else
-#	define PHP_PHPNG_XHPROF_API
+#	define PHP_XHPROF_API
 #endif
 
 #ifdef ZTS
 #include "TSRM.h"
 #endif
 
-#define PHPNG_XHPROF_G(v) ZEND_MODULE_GLOBALS_ACCESSOR(phpng_xhprof, v)
+PHP_MINIT_FUNCTION(xhprof);
+PHP_MSHUTDOWN_FUNCTION(xhprof);
+PHP_RINIT_FUNCTION(xhprof);
+PHP_RSHUTDOWN_FUNCTION(xhprof);
+PHP_MINFO_FUNCTION(xhprof);
 
-#if defined(ZTS) && defined(COMPILE_DL_PHPNG_XHPROF)
-ZEND_TSRMLS_CACHE_EXTERN();
-#endif
+PHP_FUNCTION(xhprof_enable);
+PHP_FUNCTION(xhprof_disable);
+PHP_FUNCTION(xhprof_sample_enable);
+PHP_FUNCTION(xhprof_sample_disable);
+PHP_FUNCTION(xhprof_for_test);
 
-#endif	/* PHP_PHPNG_XHPROF_H */
+#endif	/* PHP_XHPROF_H */
 
 
 /*
