@@ -1,8 +1,0 @@
-xhprof.lo: /root/download/php-src-master/ext/xhprof/xhprof.c
-	$(LIBTOOL) --mode=compile $(CC) -DZEND_ENABLE_STATIC_TSRMLS_CACHE=1 -I. -I/root/download/php-src-master/ext/xhprof $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS)  -c /root/download/php-src-master/ext/xhprof/xhprof.c -o xhprof.lo 
-$(phplibdir)/xhprof.la: ./xhprof.la
-	$(LIBTOOL) --mode=install cp ./xhprof.la $(phplibdir)
-
-./xhprof.la: $(shared_objects_xhprof) $(XHPROF_SHARED_DEPENDENCIES)
-	$(LIBTOOL) --mode=link $(CC) $(COMMON_FLAGS) $(CFLAGS_CLEAN) $(EXTRA_CFLAGS) $(LDFLAGS) -o $@ -export-dynamic -avoid-version -prefer-pic -module -rpath $(phplibdir) $(EXTRA_LDFLAGS) $(shared_objects_xhprof) $(XHPROF_SHARED_LIBADD)
-
