@@ -236,12 +236,10 @@ typedef struct hp_global_t
 /* XHProf global state */
 static hp_global_t hp_globals;
 
-
 /* Pointer to the original execute function */
-//static void (*_zend_execute_ex) (zend_execute_data *execute_data TSRMLS_DC);
-
-/* Pointer to the origianl execute_internal function */
-static void (*_zend_execute_internal)(zend_execute_data *execute_data, zval *return_value);
+ZEND_API void execute_ex_replace(zend_execute_data *execute_data);
+ZEND_DLEXPORT void hp_execute_ex (zend_execute_data *execute_data TSRMLS_DC);
+static void (*_zend_execute_ex) (zend_execute_data *execute_data TSRMLS_DC);
 
 /* Pointer to the original compile function */
 static zend_op_array * (*_zend_compile_file)(zend_file_handle *file_handle, int type TSRMLS_DC);
@@ -453,6 +451,13 @@ PHP_MINIT_FUNCTION(xhprof)
 
 	REGISTER_INI_ENTRIES();
 
+	/*replace original zend_execute_ex*/
+	zend_execute_ex = execute_ex_replace;
+
+	/*init the execute pointer*/
+	_zend_execute_ex = zend_execute_ex;
+	zend_execute_ex  = hp_execute_ex;
+
 	hp_register_constants(INIT_FUNC_ARGS_PASSTHRU);
 
 	/*init global enable*/
@@ -510,6 +515,9 @@ PHP_MSHUTDOWN_FUNCTION(xhprof)
 	hp_free_the_free_list();
 
 	UNREGISTER_INI_ENTRIES();
+
+	/*restore the execute pointer*/
+	zend_execute_ex = _zend_execute_ex;
 
 	return SUCCESS;
 }
@@ -691,7 +699,9 @@ void hp_init_profiler_state(int level TSRMLS_DC)
 		hp_globals.entries = NULL;
 	}
 	hp_globals.profiler_level = (int) level;
-	array_init(&hp_globals.stats_count);
+	if(Z_TYPE(hp_globals.stats_count) == IS_UNDEF){
+		array_init(&hp_globals.stats_count);
+	}
 	/* NOTE(cjiang): some fields such as cpu_frequencies take relatively longer
 	 * to initialize, (5 milisecond per logical cpu right now), therefore we
 	 * calculate them lazily. */
@@ -722,6 +732,7 @@ void hp_clean_profiler_state(TSRMLS_D)
 	hp_globals.mode_cb.exit_cb(TSRMLS_C);
 
 	/* Clear globals */
+	ZVAL_UNDEF(&hp_globals.stats_count);
 	hp_globals.entries = NULL;
 	hp_globals.profiler_level = 1;
 	hp_globals.ever_enabled = 0;
@@ -941,23 +952,39 @@ static const char *hp_get_base_filename(const char *filename)
  *
  * @author kannan, hzhao
  */
-static char *hp_get_function_name(zend_execute_data *data TSRMLS_DC)
+static char *hp_get_function_name(const zend_execute_data const *execute_data TSRMLS_DC, int core)
 {
-	zend_execute_data * execute_data;
+	zend_execute_data * prev_execute_data;
 	const char *func = NULL;
 	const char *cls = NULL;
 	char *ret = NULL;
 	int len;
 	zend_function *curr_func;
-
-	if (data)
-	{
-		/* shared meta data for function on the call stack */
-		curr_func = data->func;
-
+	zend_internal_function internal_function;
+	if(core){
 		/* extract function name from the meta info */
-
-		if (curr_func->common.function_name)
+		if(execute_data->opline->opcode == ZEND_STRLEN){
+			ret = estrdup("strlen");
+		}
+		else if(execute_data->opline->opcode == ZEND_DO_ICALL)
+		{
+			internal_function = execute_data->call->func->internal_function;
+			if(internal_function.function_name){
+				func = internal_function.function_name->val;
+				if(internal_function.scope){
+					cls = internal_function.scope->name->val;
+				}
+				if (cls) {
+					len = strlen(cls) + strlen(func) + 10;
+					ret = (char*)emalloc(len);
+					snprintf(ret, len, "%s::%s", cls, func);
+				} else {
+					ret = estrdup(func);
+				}
+			}
+		} else if((execute_data->opline->opcode == ZEND_DO_FCALL ||
+				execute_data->opline->opcode == ZEND_DO_UCALL ||
+				execute_data->opline->opcode == ZEND_DO_FCALL_BY_NAME))
 		{
 			/* previously, the order of the tests in the "if" below was
 			 * flipped, leading to incorrect function names in profiler
@@ -966,14 +993,15 @@ static char *hp_get_function_name(zend_execute_data *data TSRMLS_DC)
 			 * class name (not the class name based on the run-time type
 			 * of the object.
 			 */
+			curr_func = execute_data->call->func;
 			func = curr_func->common.function_name->val;
 			if (curr_func->common.scope)
 			{
 				cls = curr_func->common.scope->name->val;
 			}
-			else if (data->called_scope)
+			else if (execute_data->called_scope)
 			{
-				cls = data->called_scope->name->val;
+				cls = execute_data->called_scope->name->val;
 			}
 
 			if (cls)
@@ -987,14 +1015,15 @@ static char *hp_get_function_name(zend_execute_data *data TSRMLS_DC)
 				ret = estrdup(func);
 			}
 		}
-		else if (data->prev_execute_data)
+	}else{
+		if (execute_data->prev_execute_data)
 		{
 			/*
 			 * we are dealing with a special directive/function like
 			 * include, eval, etc.
 			 */
-			execute_data = data->prev_execute_data;
-			long curr_op = execute_data->opline->extended_value;
+			prev_execute_data = execute_data->prev_execute_data;
+			long curr_op = prev_execute_data->opline->extended_value;
 			int add_filename = 0;
 
 			switch (curr_op)
@@ -1031,9 +1060,11 @@ static char *hp_get_function_name(zend_execute_data *data TSRMLS_DC)
 			{
 				if (add_filename)
 				{
-					const zend_op *opline = ((execute_data)->opline);
-					zval *inc_filename = EX_CONSTANT(opline->op1);
-					zend_string * resolved_path;
+					const zend_op *opline = ((prev_execute_data)->opline);
+#define PREV_EX_CONSTANT(node) RT_CONSTANT_EX(prev_execute_data->literals, node)
+					zval *inc_filename = PREV_EX_CONSTANT(opline->op1);
+#undef PREV_EX_CONSTANT
+					zend_string * resolved_path = NULL;
 					if (Z_TYPE_P(inc_filename) == IS_STRING)
 					{
 						resolved_path = zend_resolve_path(Z_STRVAL_P(inc_filename), (int) Z_STRLEN_P(inc_filename));
@@ -1142,10 +1173,10 @@ void hp_inc_count(zval *counts, char *name, long count TSRMLS_DC)
 	HashTable *ht;
 	zval * data;
 
-	if (!counts){
+	if (!counts || Z_TYPE_P(counts) != IS_ARRAY){
 		return;
 	}
-	ht = HASH_OF(counts);
+	ht = Z_ARRVAL_P(counts);
 	if (!ht){
 		return;
 	}
@@ -1735,57 +1766,64 @@ void hp_mode_sampled_endfn_cb(hp_entry_t **entries TSRMLS_DC)
  * ***************************
  */
 
+ZEND_API void execute_ex_replace(zend_execute_data *execute_data)
+{
+	char * funcName = NULL;
+	int hp_profile_flag = 1;
+	while(1){
+		int ret;
+		if(hp_globals.enabled){
+			if(NULL != (funcName = hp_get_function_name(execute_data,1))){
+				BEGIN_PROFILING(&hp_globals.entries, funcName, hp_profile_flag);
+			}
+		}
+		ret = zend_vm_call_opcode_handler(execute_data);
+		if(funcName){
+			if (hp_globals.entries) {
+				END_PROFILING(&hp_globals.entries, hp_profile_flag);
+			}
+			efree(funcName);
+		}
+		if (ret != 0) {
+			if (ret < 0) {
+				return;
+			} else {
+				execute_data = EG(current_execute_data);
+			}
+		}
+	}
+	zend_error_noreturn(E_CORE_ERROR, "Arrived at end of main loop which shouldn't happen");
+}
+
 /**
- * Very similar to hp_execute. Proxy for zend_execute_internal().
- * Applies to zend builtin functions.
- * gdb /workspace/php7d/bin/php
- * set args diff/enable.php
- * b zif_xhprof_enable
- * p execute_data->opline->handler
- * zbacktrace
- *
- * strlen        -> ZEND_STRLEN_SPEC_CV_HANDLER
- * str_replace   -> ZEND_DO_ICALL_SPEC_HANDLER
- * eval          -> ZEND_INCLUDE_OR_EVAL_SPEC_CV_HANDLER
- * foo           -> ZEND_DO_UCALL_SPEC_HANDLER
+ * XHProf enable replaced the zend_execute function with this
+ * new execute function. We can do whatever profiling we need to
+ * before and after calling the actual zend_execute().
  *
  * @author hzhao, kannan
  */
+ZEND_DLEXPORT void hp_execute_ex (zend_execute_data *execute_data TSRMLS_DC) {
 
-ZEND_DLEXPORT void hp_execute_internal(zend_execute_data *execute_data, zval *return_value)
-{
+  if(!hp_globals.enabled){
+	  _zend_execute_ex(execute_data TSRMLS_CC);
+	  return;
+  }
 
-	zend_execute_data *current_data = execute_data;
-	char *func = NULL;
-	int hp_profile_flag = 1;
+  char          *func = NULL;
+  int hp_profile_flag = 1;
 
-	func = hp_get_function_name(current_data TSRMLS_CC);
+  func = hp_get_function_name(execute_data, 0 TSRMLS_CC);
+  if (!func) {
+    _zend_execute_ex(execute_data TSRMLS_CC);
+    return;
+  }
 
-	if (func)
-	{
-		BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);
-	}
-
-	if (!_zend_execute_internal)
-	{
-		/* no old override to begin with. so invoke the builtin's implementation  */
-		current_data->func->internal_function.handler(current_data, return_value);
-	}
-	else
-	{
-		/* call the old override */
-		_zend_execute_internal(current_data, return_value);
-	}
-
-	if (func)
-	{
-		if (hp_globals.entries)
-		{
-			END_PROFILING(&hp_globals.entries, hp_profile_flag);
-		}
-		efree(func);
-	}
-
+  BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);
+  _zend_execute_ex(execute_data TSRMLS_CC);
+  if (hp_globals.entries) {
+    END_PROFILING(&hp_globals.entries, hp_profile_flag);
+  }
+  efree(func);
 }
 
 /**
@@ -1852,7 +1890,7 @@ ZEND_DLEXPORT zend_op_array* hp_compile_string(zval *source_string, char *filena
 
 /**
  * This function gets called once when xhprof gets enabled.
- * It replaces all the functions like zend_execute, zend_execute_internal,
+ * It replaces all the functions like zend_execute,
  * etc that needs to be instrumented with their corresponding proxies.
  */
 static void hp_begin(long level, long xhprof_flags TSRMLS_DC)
@@ -1871,16 +1909,6 @@ static void hp_begin(long level, long xhprof_flags TSRMLS_DC)
 		/* Replace zend_compile_string with our proxy */
 		_zend_compile_string = zend_compile_string;
 		zend_compile_string  = hp_compile_string;
-
-		/* Replace zend_execute_internal with our proxy */
-		_zend_execute_internal = zend_execute_internal;
-		if (!(hp_globals.xhprof_flags & XHPROF_FLAGS_NO_BUILTINS))
-		{
-			/* if NO_BUILTINS is not set (i.e. user wants to profile builtins),
-			 * then we intercept internal (builtin) function calls.
-			 */
-			zend_execute_internal = hp_execute_internal;
-		}
 
 		/* Initialize with the dummy mode first Having these dummy callbacks saves
 		 * us from checking if any of the callbacks are NULL everywhere. */
@@ -1950,7 +1978,6 @@ static void hp_stop(TSRMLS_D)
 	/* Remove proxies, restore the originals */
 	zend_compile_file     = _zend_compile_file;
 	zend_compile_string   = _zend_compile_string;
-	zend_execute_internal = _zend_execute_internal;
 
 	/* Resore cpu affinity. */
 	restore_cpu_affinity(&hp_globals.prev_mask);

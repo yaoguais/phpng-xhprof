@@ -7,11 +7,11 @@ function bar($x) {
 function foo() {
   for ($idx = 0; $idx < 5; $idx++) {
     bar($idx);
-    $x = strlen("abc");
+    echo strlen($idx);
   }
 }
 xhprof_enable(XHPROF_FLAGS_CPU | XHPROF_FLAGS_MEMORY);
-include "lib.php";
+include __DIR__ . "/lib.php";
 $a = '$a="bbb\n";';
 echo strlen($a);
 echo str_replace($a,'bbb','aaa');

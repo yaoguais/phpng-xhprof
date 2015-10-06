@@ -1,0 +1,122 @@
+array (
+  'main()==>load::diff/lib.php' => 
+  array (
+    'ct' => 1,
+    'wt' => 99,
+    'cpu' => 104,
+    'mu' => 4592,
+    'pmu' => 3896,
+  ),
+  'main()==>run_init::diff/lib.php' => 
+  array (
+    'ct' => 1,
+    'wt' => 2,
+    'cpu' => 4,
+    'mu' => 704,
+    'pmu' => 0,
+  ),
+  'main()==>strlen' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 2,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'main()==>str_replace' => 
+  array (
+    'ct' => 1,
+    'wt' => 4,
+    'cpu' => 6,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'main()==>eval::/workspace/php-7.0.0RC1/ext/phpng-xhprof/diff/enable.php(18) : eval()\'d code' => 
+  array (
+    'ct' => 1,
+    'wt' => 10,
+    'cpu' => 12,
+    'mu' => 1488,
+    'pmu' => 280,
+  ),
+  'main()==>eval' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 2,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'foo==>bar' => 
+  array (
+    'ct' => 1,
+    'wt' => 6,
+    'cpu' => 8,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'foo==>strlen' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 2,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'bar==>bar@1' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 4,
+    'mu' => 1008,
+    'pmu' => 0,
+  ),
+  'bar@1==>bar@2' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 4,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'bar@2==>bar@3' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 4,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'bar@3==>bar@4' => 
+  array (
+    'ct' => 1,
+    'wt' => 1,
+    'cpu' => 4,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'main()==>foo' => 
+  array (
+    'ct' => 1,
+    'wt' => 871,
+    'cpu' => 104,
+    'mu' => 5904,
+    'pmu' => 0,
+  ),
+  'main()==>xhprof_disable' => 
+  array (
+    'ct' => 1,
+    'wt' => 0,
+    'cpu' => 2,
+    'mu' => 688,
+    'pmu' => 0,
+  ),
+  'main()' => 
+  array (
+    'ct' => 1,
+    'wt' => 1529,
+    'cpu' => 354,
+    'mu' => 15360,
+    'pmu' => 4176,
+  ),
+)
