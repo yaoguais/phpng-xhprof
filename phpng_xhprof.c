@@ -403,7 +403,8 @@ PHP_FUNCTION(xhprof_disable)
 	if (hp_globals.enabled)
 	{
 		hp_stop(TSRMLS_C);
-		RETURN_ARR(Z_ARR(hp_globals.stats_count));
+		RETVAL_ARR(Z_ARR(hp_globals.stats_count));
+		ZVAL_UNDEF(&hp_globals.stats_count);
 	}
 	/* else null is returned */
 }
@@ -434,7 +435,8 @@ PHP_FUNCTION(xhprof_sample_disable)
 	if (hp_globals.enabled)
 	{
 		hp_stop(TSRMLS_C);
-		RETURN_ARR(Z_ARR(hp_globals.stats_count));
+		RETVAL_ARR(Z_ARR(hp_globals.stats_count));
+		ZVAL_UNDEF(&hp_globals.stats_count);
 	}
 	/* else null is returned */
 }
@@ -454,17 +456,7 @@ PHP_MINIT_FUNCTION(xhprof)
 	/*replace original zend_execute_ex*/
 	zend_execute_ex = execute_ex_replace;
 
-	/*init the execute pointer*/
-	_zend_execute_ex = zend_execute_ex;
-	zend_execute_ex  = hp_execute_ex;
-
 	hp_register_constants(INIT_FUNC_ARGS_PASSTHRU);
-
-	/*init global enable*/
-	hp_globals.enabled = 0;
-
-	/*init hp_globals xhprof_flags*/
-	hp_globals.xhprof_flags = 0;
 
 	/* Get the number of available logical CPUs. */
 	hp_globals.cpu_num = sysconf(_SC_NPROCESSORS_CONF);
@@ -515,9 +507,6 @@ PHP_MSHUTDOWN_FUNCTION(xhprof)
 	hp_free_the_free_list();
 
 	UNREGISTER_INI_ENTRIES();
-
-	/*restore the execute pointer*/
-	zend_execute_ex = _zend_execute_ex;
 
 	return SUCCESS;
 }
@@ -961,30 +950,49 @@ static char *hp_get_function_name(const zend_execute_data const *execute_data TS
 	int len;
 	zend_function *curr_func;
 	zend_internal_function internal_function;
-	if(core){
-		/* extract function name from the meta info */
-		if(execute_data->opline->opcode == ZEND_STRLEN){
-			ret = estrdup("strlen");
+	if (hp_globals.xhprof_flags & XHPROF_FLAGS_NO_BUILTINS)
+	{
+		if (execute_data->call && execute_data->call->func->type == ZEND_INTERNAL_FUNCTION)
+		{
+			return NULL;
 		}
-		else if(execute_data->opline->opcode == ZEND_DO_ICALL)
+	}
+	if (core)
+	{
+		/* extract function name from the meta info */
+		if (execute_data->opline->opcode == ZEND_STRLEN)
+		{
+			if (!(hp_globals.xhprof_flags & XHPROF_FLAGS_NO_BUILTINS))
+			{
+				ret = estrdup("strlen");
+			}
+		}
+		else if (execute_data->opline->opcode == ZEND_DO_ICALL)
 		{
 			internal_function = execute_data->call->func->internal_function;
-			if(internal_function.function_name){
+			if (internal_function.function_name)
+			{
 				func = internal_function.function_name->val;
-				if(internal_function.scope){
+				if (internal_function.scope)
+				{
 					cls = internal_function.scope->name->val;
 				}
-				if (cls) {
+				if (cls)
+				{
 					len = strlen(cls) + strlen(func) + 10;
-					ret = (char*)emalloc(len);
+					ret = (char*) emalloc(len);
 					snprintf(ret, len, "%s::%s", cls, func);
-				} else {
+				}
+				else
+				{
 					ret = estrdup(func);
 				}
 			}
-		} else if((execute_data->opline->opcode == ZEND_DO_FCALL ||
-				execute_data->opline->opcode == ZEND_DO_UCALL ||
-				execute_data->opline->opcode == ZEND_DO_FCALL_BY_NAME))
+		}
+		// user call functions
+		if ((execute_data->opline->opcode == ZEND_DO_FCALL
+				|| execute_data->opline->opcode == ZEND_DO_UCALL
+				|| execute_data->opline->opcode == ZEND_DO_FCALL_BY_NAME))
 		{
 			/* previously, the order of the tests in the "if" below was
 			 * flipped, leading to incorrect function names in profiler
@@ -1015,15 +1023,17 @@ static char *hp_get_function_name(const zend_execute_data const *execute_data TS
 				ret = estrdup(func);
 			}
 		}
-	}else{
-		if (execute_data->prev_execute_data)
+	}
+	else
+	{
+		if (execute_data->prev_execute_data && execute_data->prev_execute_data->opline)
 		{
 			/*
 			 * we are dealing with a special directive/function like
 			 * include, eval, etc.
 			 */
 			prev_execute_data = execute_data->prev_execute_data;
-			long curr_op = prev_execute_data->opline->extended_value;
+			uint32_t curr_op = prev_execute_data->opline->extended_value;
 			int add_filename = 0;
 
 			switch (curr_op)
@@ -1265,8 +1275,7 @@ void hp_sample_stack(hp_entry_t **entries TSRMLS_DC)
 			 hp_globals.last_sample_time.tv_usec);
 
 	/* Init stats in the global stats_count hashtable */
-	hp_get_function_stack(*entries,
-	INT_MAX, symbol, sizeof(symbol));
+	hp_get_function_stack(*entries, INT_MAX, symbol, sizeof(symbol));
 
 	add_assoc_string(&hp_globals.stats_count, key, symbol);
 	return;
@@ -1778,9 +1787,14 @@ ZEND_API void execute_ex_replace(zend_execute_data *execute_data)
 			}
 		}
 		ret = zend_vm_call_opcode_handler(execute_data);
-		if(funcName){
-			if (hp_globals.entries) {
-				END_PROFILING(&hp_globals.entries, hp_profile_flag);
+		if(funcName)
+		{
+			if(hp_globals.enabled)
+			{
+				// main() can't be out here
+				if (hp_globals.entries && hp_globals.entries->prev_hprof) {
+					END_PROFILING(&hp_globals.entries, hp_profile_flag);
+				}
 			}
 			efree(funcName);
 		}
@@ -1910,6 +1924,10 @@ static void hp_begin(long level, long xhprof_flags TSRMLS_DC)
 		_zend_compile_string = zend_compile_string;
 		zend_compile_string  = hp_compile_string;
 
+		/*init the execute pointer*/
+		_zend_execute_ex = zend_execute_ex;
+		zend_execute_ex  = hp_execute_ex;
+
 		/* Initialize with the dummy mode first Having these dummy callbacks saves
 		 * us from checking if any of the callbacks are NULL everywhere. */
 		hp_globals.mode_cb.init_cb = hp_mode_dummy_init_cb;
@@ -1978,6 +1996,7 @@ static void hp_stop(TSRMLS_D)
 	/* Remove proxies, restore the originals */
 	zend_compile_file     = _zend_compile_file;
 	zend_compile_string   = _zend_compile_string;
+	zend_execute_ex       = _zend_execute_ex;
 
 	/* Resore cpu affinity. */
 	restore_cpu_affinity(&hp_globals.prev_mask);
