@@ -775,7 +775,7 @@ void hp_clean_profiler_state(TSRMLS_D)
 			/* 'hp_mode_common_endfn' to avoid including the time in */       \
 			/* 'hp_mode_common_endfn' in the profiling results.      */       \
 			hp_globals.mode_cb.end_fn_cb((entries) TSRMLS_CC);                \
-			cur_entry = (*(entries));printf("out %s \n",(cur_entry)->name_hprof);                                         \
+			cur_entry = (*(entries));                                         \
 			/* Call the universal callback */                                 \
 			hp_mode_common_endfn((entries), (cur_entry) TSRMLS_CC);           \
 			/* Free top entry and update entries linked list */               \
@@ -1186,24 +1186,20 @@ void hp_inc_count(zval *counts, char *name, long count TSRMLS_DC)
 	zval * data;
 
 	if (!counts || Z_TYPE_P(counts) != IS_ARRAY){
-		printf("5     %d \n",Z_TYPE_P(counts));
 		return;
 	}
 	ht = Z_ARRVAL_P(counts);
 	if (!ht){
-		printf("55\n");
 		return;
 	}
 
 	if ((data = zend_hash_str_find(ht, name, strlen(name))) != NULL)
 	{
-		printf("555\n");
 		ZVAL_LONG(data, Z_LVAL_P(data)+count)
 	}
 	else
 	{
-		printf("5555\n");
-		printf("ret: %d\n",add_assoc_long(counts, name, count));
+		add_assoc_long(counts, name, count);
 	}
 
 }
@@ -1230,7 +1226,6 @@ int hp_hash_lookup(zval ** val, char *symbol TSRMLS_DC)
 	{
 		/* Symbol already exists */
 		*val = tmp;
-		printf("found %s %d \n",symbol,Z_TYPE_P(*val));
 	}
 	else
 	{
@@ -1712,8 +1707,6 @@ int hp_mode_shared_endfn_cb(zval * val, hp_entry_t *top, char *symbol TSRMLS_DC)
 		return -1;
 	}
 
-	printf("after %s %d \n",symbol,Z_TYPE_P(val));
-
 	/* Bump stats in the counts hashtable */
 	hp_inc_count(val, "ct", 1 TSRMLS_CC);
 
@@ -1738,7 +1731,6 @@ void hp_mode_hier_endfn_cb(hp_entry_t **entries TSRMLS_DC)
 
 	/* Get the stat array */
 	hp_get_function_stack(top, 2, symbol, sizeof(symbol));
-	printf("symbol %s \n",symbol);
 	if (hp_mode_shared_endfn_cb(&counts, top, symbol TSRMLS_CC) != 0)
 	{
 		return;
@@ -1793,7 +1785,6 @@ ZEND_API void execute_ex_replace(zend_execute_data *execute_data)
 		int ret;
 		if(hp_globals.enabled){
 			if(NULL != (funcName = hp_opcode_get_function_name(execute_data))){
-				printf("%s %d \n",funcName,strlen(funcName));
 				BEGIN_PROFILING(&hp_globals.entries, funcName, hp_profile_flag);
 			}
 		}
