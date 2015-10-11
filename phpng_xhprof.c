@@ -297,9 +297,6 @@ ZEND_END_ARG_INFO()
 
 ZEND_BEGIN_ARG_INFO(arginfo_xhprof_sample_disable, 0)
 ZEND_END_ARG_INFO()
-
-ZEND_BEGIN_ARG_INFO(arginfo_xhprof_for_test, 0)
-ZEND_END_ARG_INFO()
 /* }}} */
 
 /**
@@ -322,7 +319,6 @@ zend_function_entry xhprof_functions[] =
 	PHP_FE(xhprof_disable, arginfo_xhprof_disable)
 	PHP_FE(xhprof_sample_enable, arginfo_xhprof_sample_enable)
 	PHP_FE(xhprof_sample_disable, arginfo_xhprof_sample_disable)
-	PHP_FE(xhprof_for_test, arginfo_xhprof_for_test)
 	{ NULL, NULL, NULL }
 };
 
@@ -617,6 +613,10 @@ static inline uint8 hp_inline_hash(char * str)
  */
 static void hp_get_ignored_functions_from_arg(zval *args)
 {
+	if (hp_globals.ignored_function_names)
+	{
+		hp_array_del(hp_globals.ignored_function_names);
+	}
 	if (args != NULL)
 	{
 		zval *zresult = NULL;
@@ -984,12 +984,12 @@ static char *hp_opcode_get_function_name(const zend_execute_data const *execute_
 			{
 				len = strlen(cls) + strlen(func) + 10;
 				ret = (char*) emalloc(len);
-				snprintf(ret, len, "%s::%s\0", cls, func);
+				snprintf(ret, len, "%s::%s", cls, func);
 			}
 			else
 			{
 				ret = (char*) emalloc(len);
-				snprintf(ret, len, "%s\0", func);
+				snprintf(ret, len, "%s", func);
 			}
 			return ret;
 		}
@@ -1036,12 +1036,12 @@ static char *hp_get_function_name(zend_execute_data * execute_data)
 			{
 				len = strlen(cls) + strlen(func) + 10;
 				ret = (char*) emalloc(len);
-				snprintf(ret, len, "%s::%s\0", cls, func);
+				snprintf(ret, len, "%s::%s", cls, func);
 			}
 			else
 			{
 				ret = (char*) emalloc(len);
-				snprintf(ret, len, "%s\0", func);
+				snprintf(ret, len, "%s", func);
 			}
 		}
 		else
@@ -1092,7 +1092,7 @@ static char *hp_get_function_name(zend_execute_data * execute_data)
 					filename = hp_get_base_filename((curr_func->op_array).filename->val);
 					len      = strlen("run_init") + strlen(filename) + 3;
 					ret      = (char *)emalloc(len);
-					snprintf(ret, len, "run_init::%s\0", filename);
+					snprintf(ret, len, "run_init::%s", filename);
 				}
 				else
 				{
@@ -1859,7 +1859,7 @@ ZEND_DLEXPORT zend_op_array* hp_compile_file(zend_file_handle *file_handle, int 
 	filename = hp_get_base_filename(file_handle->filename);
 	len = sizeof("load") - 1 + strlen(filename) + 3;
 	func = (char *) emalloc(len);
-	snprintf(func, len, "load::%s\0", filename);
+	snprintf(func, len, "load::%s", filename);
 
 	BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);
 	ret = _zend_compile_file(file_handle, type TSRMLS_CC);
@@ -1885,7 +1885,7 @@ ZEND_DLEXPORT zend_op_array* hp_compile_string(zval *source_string, char *filena
 
 	len = sizeof("eval") -1 + strlen(filename) + 3;
 	func = (char *) emalloc(len);
-	snprintf(func, len, "eval::%s\0", filename);
+	snprintf(func, len, "eval::%s", filename);
 
 	BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);
 	ret = _zend_compile_string(source_string, filename TSRMLS_CC);
@@ -2065,7 +2065,7 @@ static char **hp_strings_in_zval(zval *values)
 		ht = Z_ARRVAL_P(values);
 		count = zend_hash_num_elements(ht);
 
-		if ((result = (char**) emalloc(sizeof(char*) * (count + 1))) == NULL)
+		if ((result = (char**) malloc(sizeof(char*) * (count + 1))) == NULL)
 		{
 			return result;
 		}
@@ -2078,7 +2078,7 @@ static char **hp_strings_in_zval(zval *values)
 						&& strcmp(Z_STRVAL_P(val), ROOT_SYMBOL)
 								!= 0)
 				{/* do not ignore "main" */
-					result[ix] = estrdup(Z_STRVAL_P(val));
+					result[ix] = strdup(Z_STRVAL_P(val));
 					ix++;
 				}
 			}
@@ -2086,11 +2086,11 @@ static char **hp_strings_in_zval(zval *values)
 	}
 	else if (Z_TYPE_P(values) == IS_STRING)
 	{
-		if ((result = (char**) emalloc(sizeof(char*) * 2)) == NULL)
+		if ((result = (char**) malloc(sizeof(char*) * 2)) == NULL)
 		{
 			return result;
 		}
-		result[0] = estrdup(Z_STRVAL_P(values));
+		result[0] = strdup(Z_STRVAL_P(values));
 		ix = 1;
 	}
 	else
@@ -2118,33 +2118,10 @@ static inline void hp_array_del(char **name_array)
 		int i = 0;
 		for (; name_array[i] != NULL && i < XHPROF_MAX_IGNORED_FUNCTIONS; i++)
 		{
-			efree(name_array[i]);
+			free(name_array[i]);
 		}
-		efree(name_array);
+		free(name_array);
 	}
-}
-
-/**
- *  @phpng
- *  Test base functions without PHP attributes
- *  not we make main()->test_a()->test_a()->test_b()->test_c()->test_a()
- */
-PHP_FUNCTION(xhprof_for_test)
-{
-	int hp_profile_flag = 1;
-	char * test_a = "test_a";
-	char * test_b = "test_b";
-	char * test_c = "test_c";
-	BEGIN_PROFILING(&hp_globals.entries, test_a, hp_profile_flag);
-		BEGIN_PROFILING(&hp_globals.entries, test_a, hp_profile_flag);
-			BEGIN_PROFILING(&hp_globals.entries, test_b, hp_profile_flag);
-				BEGIN_PROFILING(&hp_globals.entries, test_c, hp_profile_flag);
-					BEGIN_PROFILING(&hp_globals.entries, test_a, hp_profile_flag);
-					END_PROFILING(&hp_globals.entries, hp_profile_flag);
-				END_PROFILING(&hp_globals.entries, hp_profile_flag);
-			END_PROFILING(&hp_globals.entries, hp_profile_flag);
-		END_PROFILING(&hp_globals.entries, hp_profile_flag);
-	END_PROFILING(&hp_globals.entries, hp_profile_flag);
 }
 
 /*

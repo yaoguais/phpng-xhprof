@@ -1,9 +1,10 @@
 --TEST--
 XHProf: Test excluding call_user_func and similar functions
 Author: mpal
+--INI--
+error_reporting = E_ALL & ~E_NOTICE & ~E_DEPRECATED
 --FILE--
 <?php
-
 include_once dirname(__FILE__).'/common.php';
 
 $xhprof_ignored_functions = array( 'ignored_functions' =>
