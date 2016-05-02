@@ -1,6 +1,5 @@
 --TEST--
 XHProf: Basic Profiling Test
-Author: Kannan
 --FILE--
 <?php
 

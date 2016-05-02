@@ -48,6 +48,8 @@ PHP_FUNCTION(xhprof_sample_enable);
 PHP_FUNCTION(xhprof_sample_disable);
 PHP_FUNCTION(xhprof_for_test);
 
+
+
 #endif	/* PHP_XHPROF_H */
 
 

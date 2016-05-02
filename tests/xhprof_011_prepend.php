@@ -2,3 +2,4 @@
 
 xhprof_enable();
 echo "PREPENDED\n";
+

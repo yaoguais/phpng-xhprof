@@ -1,6 +1,5 @@
 --TEST--
 XHProf: Test Include File (load/run_init operations)
-Author: Kannan
 --FILE--
 <?php
 

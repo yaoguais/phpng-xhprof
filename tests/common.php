@@ -12,7 +12,6 @@
  * @author Kannan
  */
 function print_canonical($xhprof_data) {
-  //print_r($xhprof_data);
   ksort($xhprof_data);
   foreach($xhprof_data as $func => $metrics) {
     echo str_pad($func, 40) . ":";
@@ -33,3 +32,4 @@ function print_canonical($xhprof_data) {
     echo "\n";
   }
 }
+
