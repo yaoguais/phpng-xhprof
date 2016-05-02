@@ -165,9 +165,7 @@ typedef struct hp_mode_cb
  * This structure is instantiated once.  Initialize defaults for attributes in
  * hp_init_profiler_state() Cleanup/free attributes in
  * hp_clean_profiler_state() */
-typedef struct hp_global_t
-{
-
+ZEND_BEGIN_MODULE_GLOBALS(xhprof)
 	/*       ----------   Global attributes:  -----------       */
 
 	/* Indicates if xhprof is currently enabled */
@@ -225,16 +223,17 @@ typedef struct hp_global_t
 	char **ignored_function_names;
 	uint8 ignored_function_filter[XHPROF_IGNORED_FUNCTION_FILTER_SIZE];
 
-} hp_global_t;
+ZEND_END_MODULE_GLOBALS(xhprof);
 
+#define XHG(v) ZEND_MODULE_GLOBALS_ACCESSOR(xhprof, v)
+
+ZEND_DECLARE_MODULE_GLOBALS(xhprof);
 
 /**
  * ***********************
  * GLOBAL STATIC VARIABLES
  * ***********************
  */
-/* XHProf global state */
-static hp_global_t hp_globals;
 
 /* Pointer to the original execute function */
 ZEND_API void execute_ex_replace(zend_execute_data *execute_data);
@@ -401,14 +400,14 @@ PHP_FUNCTION(xhprof_enable)
  */
 PHP_FUNCTION(xhprof_disable)
 {
-	if (hp_globals.enabled)
+	if (XHG(enabled))
 	{
 		hp_stop();
-		ZVAL_COPY(return_value, &hp_globals.stats_count);
-		if (Z_TYPE(hp_globals.stats_count) != IS_UNDEF) {
-			zval_ptr_dtor(&hp_globals.stats_count);
+		ZVAL_COPY(return_value, &XHG(stats_count));
+		if (Z_TYPE(XHG(stats_count)) != IS_UNDEF) {
+			zval_ptr_dtor(&XHG(stats_count));
 		}
-		ZVAL_UNDEF(&hp_globals.stats_count);
+		ZVAL_UNDEF(&XHG(stats_count));
 	}
 	/* else null is returned */
 }
@@ -436,13 +435,18 @@ PHP_FUNCTION(xhprof_sample_enable)
  */
 PHP_FUNCTION(xhprof_sample_disable)
 {
-	if (hp_globals.enabled)
+	if (XHG(enabled))
 	{
 		hp_stop();
-		RETVAL_ARR(Z_ARR(hp_globals.stats_count));
-		ZVAL_UNDEF(&hp_globals.stats_count);
+		ZVAL_COPY(return_value, &XHG(stats_count));
+		zval_ptr_dtor(&XHG(stats_count));
+		ZVAL_UNDEF(&XHG(stats_count));
 	}
 	/* else null is returned */
+}
+
+static inline void php_xhprof_init_globals(zend_xhprof_globals *xhg) {
+	memset(xhg, 0, sizeof(zend_xhprof_globals));
 }
 
 /**
@@ -455,45 +459,14 @@ PHP_MINIT_FUNCTION(xhprof)
 
 	int i;
 
+	ZEND_INIT_MODULE_GLOBALS(xhprof, php_xhprof_init_globals, NULL);
+
 	REGISTER_INI_ENTRIES();
 
 	/*replace original zend_execute_ex*/
 	zend_execute_ex = execute_ex_replace;
 
 	hp_register_constants(INIT_FUNC_ARGS_PASSTHRU);
-
-	/* Get the number of available logical CPUs. */
-	if (!hp_globals.cpu_num) {
-		memset(&hp_globals, 0, sizeof(hp_globals));
-	}
-	hp_globals.cpu_num = sysconf(_SC_NPROCESSORS_CONF);
-
-	/* Get the cpu affinity mask. */
-#ifndef __APPLE__
-	if (GET_AFFINITY(0, sizeof(cpu_set_t), &hp_globals.prev_mask) < 0)
-	{
-		perror("getaffinity");
-		return FAILURE;
-	}
-#else
-	CPU_ZERO(&(hp_globals.prev_mask));
-#endif
-
-	/* Initialize cpu_frequencies and cur_cpu_id. */
-	hp_globals.cpu_frequencies = NULL;
-	hp_globals.cur_cpu_id = 0;
-
-	ZVAL_UNDEF(&hp_globals.stats_count);
-
-	/* no free hp_entry_t structures to start with */
-	hp_globals.entry_free_list = NULL;
-
-	for (i = 0; i < 256; i++)
-	{
-		hp_globals.func_hash_counters[i] = 0;
-	}
-
-	hp_ignored_functions_filter_clear();
 
 #if defined(DEBUG)
 	/* To make it random number generator repeatable to ease testing. */
@@ -507,12 +480,6 @@ PHP_MINIT_FUNCTION(xhprof)
  */
 PHP_MSHUTDOWN_FUNCTION(xhprof)
 {
-	/* Make sure cpu_frequencies is free'ed. */
-	clear_frequencies();
-
-	/* free any remaining items in the free list */
-	hp_free_the_free_list();
-
 	UNREGISTER_INI_ENTRIES();
 
 	return SUCCESS;
@@ -527,6 +494,22 @@ PHP_RINIT_FUNCTION(xhprof)
 	ZEND_TSRMLS_CACHE_UPDATE();
 #endif
 
+	/* Get the number of available logical CPUs. */
+	XHG(cpu_num) = sysconf(_SC_NPROCESSORS_CONF);
+
+	/* Get the cpu affinity mask. */
+#ifndef __APPLE__
+	if (GET_AFFINITY(0, sizeof(cpu_set_t), &XHG(prev_mask)) < 0)
+	{
+		perror("getaffinity");
+		return FAILURE;
+	}
+#else
+	CPU_ZERO(&XHG(prev_mask));
+#endif
+
+	hp_ignored_functions_filter_clear();
+
 	return SUCCESS;
 }
 
@@ -536,6 +519,13 @@ PHP_RINIT_FUNCTION(xhprof)
 PHP_RSHUTDOWN_FUNCTION(xhprof)
 {
 	hp_end();
+
+	/* Make sure cpu_frequencies is free'ed. */
+	clear_frequencies();
+
+	/* free any remaining items in the free list */
+	hp_free_the_free_list();
+
 	return SUCCESS;
 }
 
@@ -551,20 +541,20 @@ PHP_MINFO_FUNCTION(xhprof)
 
 	php_info_print_table_start();
 	php_info_print_table_header(2, "xhprof", XHPROF_VERSION);
-	len = snprintf(buf, SCRATCH_BUF_LEN, "%d", hp_globals.cpu_num);
+	len = snprintf(buf, SCRATCH_BUF_LEN, "%d", XHG(cpu_num));
 	buf[len] = 0;
 	php_info_print_table_header(2, "CPU num", buf);
 
-	if (hp_globals.cpu_frequencies)
+	if (XHG(cpu_frequencies))
 	{
 		/* Print available cpu frequencies here. */
 		php_info_print_table_header(2, "CPU logical id", " Clock Rate (MHz) ");
-		for (i = 0; i < hp_globals.cpu_num; ++i)
+		for (i = 0; i < XHG(cpu_num); ++i)
 		{
 			len = snprintf(buf, SCRATCH_BUF_LEN, " CPU %d ", i);
 			buf[len] = 0;
 			len = snprintf(tmp, SCRATCH_BUF_LEN, "%f",
-					hp_globals.cpu_frequencies[i]);
+					XHG(cpu_frequencies[i]));
 			tmp[len] = 0;
 			php_info_print_table_row(2, buf, tmp);
 		}
@@ -628,20 +618,20 @@ static inline uint8 hp_inline_hash(char * str)
  */
 static void hp_get_ignored_functions_from_arg(zval *args)
 {
-	if (hp_globals.ignored_function_names)
+	if (XHG(ignored_function_names))
 	{
-		hp_array_del(hp_globals.ignored_function_names);
+		hp_array_del(XHG(ignored_function_names));
 	}
 	if (args != NULL)
 	{
 		zval *zresult = NULL;
 
 		zresult = hp_zval_at_key("ignored_functions", args);
-		hp_globals.ignored_function_names = hp_strings_in_zval(zresult);
+		XHG(ignored_function_names) = hp_strings_in_zval(zresult);
 	}
 	else
 	{
-		hp_globals.ignored_function_names = NULL;
+		XHG(ignored_function_names) = NULL;
 	}
 }
 
@@ -661,7 +651,7 @@ static inline zend_class_entry* hp_get_called_scope(const zend_execute_data *e) 
  */
 static void hp_ignored_functions_filter_clear()
 {
-	memset(hp_globals.ignored_function_filter, 0, XHPROF_IGNORED_FUNCTION_FILTER_SIZE);
+	memset(XHG(ignored_function_filter), 0, XHPROF_IGNORED_FUNCTION_FILTER_SIZE);
 }
 
 /*
@@ -672,15 +662,15 @@ static void hp_ignored_functions_filter_clear()
  */
 static void hp_ignored_functions_filter_init()
 {
-	if (hp_globals.ignored_function_names != NULL)
+	if (XHG(ignored_function_names) != NULL)
 	{
 		int i = 0;
-		for (; hp_globals.ignored_function_names[i] != NULL; i++)
+		for (; XHG(ignored_function_names[i]) != NULL; i++)
 		{
-			char *str = hp_globals.ignored_function_names[i];
+			char *str = XHG(ignored_function_names[i]);
 			uint8 hash = hp_inline_hash(str);
 			int idx = INDEX_2_BYTE(hash);
-			hp_globals.ignored_function_filter[idx] |= INDEX_2_BIT(hash);
+			XHG(ignored_function_filter[idx]) |= INDEX_2_BIT(hash);
 		}
 	}
 }
@@ -694,7 +684,7 @@ static void hp_ignored_functions_filter_init()
 int hp_ignored_functions_filter_collision(uint8 hash)
 {
 	uint8 mask = INDEX_2_BIT(hash);
-	return hp_globals.ignored_function_filter[INDEX_2_BYTE(hash)] & mask;
+	return XHG(ignored_function_filter[INDEX_2_BYTE(hash)]) & mask;
 }
 
 /**
@@ -705,29 +695,29 @@ int hp_ignored_functions_filter_collision(uint8 hash)
 void hp_init_profiler_state(int level)
 {
 	/* Setup globals */
-	if (!hp_globals.ever_enabled)
+	if (!XHG(ever_enabled))
 	{
-		hp_globals.ever_enabled = 1;
-		hp_globals.entries = NULL;
+		XHG(ever_enabled) = 1;
+		XHG(entries) = NULL;
 	}
-	hp_globals.profiler_level = (int) level;
-	if(Z_TYPE(hp_globals.stats_count) == IS_UNDEF){
-		array_init(&hp_globals.stats_count);
+	XHG(profiler_level) = (int) level;
+	if(Z_TYPE(XHG(stats_count)) == IS_UNDEF){
+		array_init(&XHG(stats_count));
 	}
 	/* NOTE(cjiang): some fields such as cpu_frequencies take relatively longer
 	 * to initialize, (5 milisecond per logical cpu right now), therefore we
 	 * calculate them lazily. */
-	if (hp_globals.cpu_frequencies == NULL)
+	if (XHG(cpu_frequencies) == NULL)
 	{
 		get_all_cpu_frequencies();
-		restore_cpu_affinity(&hp_globals.prev_mask);
+		restore_cpu_affinity(&XHG(prev_mask));
 	}
 
 	/* bind to a random cpu so that we can use rdtsc instruction. */
-	bind_to_cpu((int) (rand() % hp_globals.cpu_num));
+	bind_to_cpu((int) (rand() % XHG(cpu_num)));
 
 	/* Call current mode's init cb */
-	hp_globals.mode_cb.init_cb();
+	XHG(mode_cb).init_cb();
 
 	/* Set up filter of functions which may be ignored during profiling */
 	hp_ignored_functions_filter_init();
@@ -741,20 +731,21 @@ void hp_init_profiler_state(int level)
 void hp_clean_profiler_state()
 {
 	/* Call current mode's exit cb */
-	hp_globals.mode_cb.exit_cb();
+	XHG(mode_cb).exit_cb();
 
 	/* Clear globals */
-	if (Z_TYPE(hp_globals.stats_count) != IS_UNDEF) {
-		zval_ptr_dtor(&hp_globals.stats_count);
+	if (Z_TYPE(XHG(stats_count)) != IS_UNDEF) {
+		zval_ptr_dtor(&XHG(stats_count));
+		ZVAL_UNDEF(&XHG(stats_count));
 	}
-	ZVAL_UNDEF(&hp_globals.stats_count);
-	hp_globals.entries = NULL;
-	hp_globals.profiler_level = 1;
-	hp_globals.ever_enabled = 0;
+
+	XHG(entries) = NULL;
+	XHG(profiler_level) = 1;
+	XHG(ever_enabled) = 0;
 
 	/* Delete the array storing ignored function names */
-	hp_array_del(hp_globals.ignored_function_names);
-	hp_globals.ignored_function_names = NULL;
+	hp_array_del(XHG(ignored_function_names));
+	XHG(ignored_function_names) = NULL;
 }
 
 /*
@@ -778,7 +769,7 @@ void hp_clean_profiler_state()
 			/* Call the universal callback */                                 \
 			hp_mode_common_beginfn((entries), (cur_entry));                   \
 			/* Call the mode's beginfn callback */                            \
-			hp_globals.mode_cb.begin_fn_cb((entries), (cur_entry));           \
+			XHG(mode_cb).begin_fn_cb((entries), (cur_entry));           \
 			/* Update entries linked list */                                  \
 			(*(entries)) = (cur_entry);                                       \
 		}                                                                     \
@@ -800,7 +791,7 @@ void hp_clean_profiler_state()
 			/* NOTE(cjiang): we want to call this 'end_fn_cb' before */       \
 			/* 'hp_mode_common_endfn' to avoid including the time in */       \
 			/* 'hp_mode_common_endfn' in the profiling results.      */       \
-			hp_globals.mode_cb.end_fn_cb((entries));                          \
+			XHG(mode_cb).end_fn_cb((entries));                          \
 			cur_entry = (*(entries));                                         \
 			/* Call the universal callback */                                 \
 			hp_mode_common_endfn((entries), (cur_entry));                     \
@@ -859,10 +850,9 @@ int hp_ignore_entry_work(uint8 hash_code, char *curr_func)
 	if (hp_ignored_functions_filter_collision(hash_code))
 	{
 		int i = 0;
-		for (; hp_globals.ignored_function_names[i] != NULL; i++)
+		for (; XHG(ignored_function_names[i]) != NULL; i++)
 		{
-			char *name = hp_globals.ignored_function_names[i];
-			if (!strcmp(curr_func, name))
+			if (!strcmp(curr_func, XHG(ignored_function_names[i])))
 			{
 				ignore++;
 				break;
@@ -876,7 +866,7 @@ int hp_ignore_entry_work(uint8 hash_code, char *curr_func)
 inline int hp_ignore_entry(uint8 hash_code, char *curr_func)
 {
 	/* First check if ignoring functions is enabled */
-	return hp_globals.ignored_function_names != NULL && hp_ignore_entry_work(hash_code, curr_func);
+	return XHG(ignored_function_names) != NULL && hp_ignore_entry_work(hash_code, curr_func);
 }
 
 /**
@@ -978,7 +968,7 @@ static char *hp_opcode_get_function_name(const zend_execute_data const *execute_
 	switch(execute_data->opline->opcode)
 	{
 	case ZEND_STRLEN:
-		if(hp_globals.xhprof_flags & XHPROF_FLAGS_NO_BUILTINS){
+		if(XHG(xhprof_flags) & XHPROF_FLAGS_NO_BUILTINS){
 			return NULL;
 		}
 		return estrdup("strlen");
@@ -990,7 +980,7 @@ static char *hp_opcode_get_function_name(const zend_execute_data const *execute_
 			switch(execute_data->call->func->type)
 			{
 			case ZEND_INTERNAL_FUNCTION:
-				if(hp_globals.xhprof_flags & XHPROF_FLAGS_NO_BUILTINS){
+				if(XHG(xhprof_flags) & XHPROF_FLAGS_NO_BUILTINS){
 					return NULL;
 				}
 				internal_function = execute_data->call->func->internal_function;
@@ -1143,7 +1133,7 @@ static char *hp_get_function_name(zend_execute_data * execute_data)
  */
 static void hp_free_the_free_list()
 {
-	hp_entry_t *p = hp_globals.entry_free_list;
+	hp_entry_t *p = XHG(entry_free_list);
 	hp_entry_t *cur;
 
 	while (p)
@@ -1166,11 +1156,11 @@ static hp_entry_t *hp_fast_alloc_hprof_entry()
 {
 	hp_entry_t *p;
 
-	p = hp_globals.entry_free_list;
+	p = XHG(entry_free_list);
 
 	if (p)
 	{
-		hp_globals.entry_free_list = p->prev_hprof;
+		XHG(entry_free_list) = p->prev_hprof;
 		return p;
 	}
 	else
@@ -1191,8 +1181,8 @@ static void hp_fast_free_hprof_entry(hp_entry_t *p)
 
 	/* we use/overload the prev_hprof field in the structure to link entries in
 	 * the free list. */
-	p->prev_hprof = hp_globals.entry_free_list;
-	hp_globals.entry_free_list = p;
+	p->prev_hprof = XHG(entry_free_list);
+	XHG(entry_free_list) = p;
 }
 
 /**
@@ -1242,7 +1232,7 @@ int hp_hash_lookup(zval ** val, char *symbol)
 	zval * tmp;
 
 	/* Bail if something is goofy */
-	if (Z_TYPE_P(&hp_globals.stats_count) == IS_UNDEF || !(ht = HASH_OF(&hp_globals.stats_count)))
+	if (Z_TYPE_P(&XHG(stats_count)) == IS_UNDEF || !(ht = HASH_OF(&XHG(stats_count))))
 	{
 		return -1;
 	}
@@ -1257,7 +1247,7 @@ int hp_hash_lookup(zval ** val, char *symbol)
 	{
 		/* Add symbol to hash table */
 		array_init(*val);
-		add_assoc_zval(&hp_globals.stats_count, symbol, *val);
+		add_assoc_zval(&XHG(stats_count), symbol, *val);
 	}
 	return 0;
 }
@@ -1299,13 +1289,13 @@ void hp_sample_stack(hp_entry_t **entries)
 	char symbol[SCRATCH_BUF_LEN * 1000];
 
 	/* Build key */
-	snprintf(key, sizeof(key), "%d.%06d", hp_globals.last_sample_time.tv_sec,
-			 hp_globals.last_sample_time.tv_usec);
+	snprintf(key, sizeof(key), "%d.%06d", XHG(last_sample_time).tv_sec,
+			 XHG(last_sample_time).tv_usec);
 
 	/* Init stats in the global stats_count hashtable */
 	hp_get_function_stack(*entries, INT_MAX, symbol, sizeof(symbol));
 
-	add_assoc_string(&hp_globals.stats_count, key, symbol);
+	add_assoc_string(&XHG(stats_count), key, symbol);
 	return;
 }
 
@@ -1329,14 +1319,14 @@ void hp_sample_check(hp_entry_t **entries)
 
 	/* See if its time to sample.  While loop is to handle a single function
 	 * taking a long time and passing several sampling intervals. */
-	while ((cycle_timer() - hp_globals.last_sample_tsc) > hp_globals.sampling_interval_tsc)
+	while ((cycle_timer() - XHG(last_sample_tsc)) > XHG(sampling_interval_tsc))
 	{
 
 		/* bump last_sample_tsc */
-		hp_globals.last_sample_tsc += hp_globals.sampling_interval_tsc;
+		XHG(last_sample_tsc) += XHG(sampling_interval_tsc);
 
 		/* bump last_sample_time - HAS TO BE UPDATED BEFORE calling hp_sample_stack */
-		incr_us_interval(&hp_globals.last_sample_time,
+		incr_us_interval(&XHG(last_sample_time),
 				XHPROF_SAMPLING_INTERVAL);
 
 		/* sample the stack */
@@ -1392,7 +1382,7 @@ int bind_to_cpu(uint32 cpu_id)
 	}
 
 	/* record the cpu_id the process is bound to. */
-	hp_globals.cur_cpu_id = cpu_id;
+	XHG(cur_cpu_id) = cpu_id;
 
 	return 0;
 }
@@ -1484,14 +1474,14 @@ static void get_all_cpu_frequencies()
 	int id;
 	double frequency;
 
-	hp_globals.cpu_frequencies = malloc(sizeof(double) * hp_globals.cpu_num);
-	if (hp_globals.cpu_frequencies == NULL)
+	XHG(cpu_frequencies) = malloc(sizeof(double) * XHG(cpu_num));
+	if (XHG(cpu_frequencies) == NULL)
 	{
 		return;
 	}
 
 	/* Iterate over all cpus found on the machine. */
-	for (id = 0; id < hp_globals.cpu_num; ++id)
+	for (id = 0; id < XHG(cpu_num); ++id)
 	{
 		/* Only get the previous cpu affinity mask for the first call. */
 		if (bind_to_cpu(id))
@@ -1510,7 +1500,7 @@ static void get_all_cpu_frequencies()
 			clear_frequencies();
 			return;
 		}
-		hp_globals.cpu_frequencies[id] = frequency;
+		XHG(cpu_frequencies[id]) = frequency;
 	}
 }
 
@@ -1531,7 +1521,7 @@ int restore_cpu_affinity(cpu_set_t * prev_mask)
 		return -1;
 	}
 	/* default value ofor cur_cpu_id is 0. */
-	hp_globals.cur_cpu_id = 0;
+	XHG(cur_cpu_id) = 0;
 	return 0;
 }
 
@@ -1542,12 +1532,12 @@ int restore_cpu_affinity(cpu_set_t * prev_mask)
  */
 static void clear_frequencies()
 {
-	if (hp_globals.cpu_frequencies)
+	if (XHG(cpu_frequencies))
 	{
-		free(hp_globals.cpu_frequencies);
-		hp_globals.cpu_frequencies = NULL;
+		free(XHG(cpu_frequencies));
+		XHG(cpu_frequencies) = NULL;
 	}
-	restore_cpu_affinity(&hp_globals.prev_mask);
+	restore_cpu_affinity(&XHG(prev_mask));
 }
 
 
@@ -1595,7 +1585,7 @@ void hp_mode_common_beginfn(hp_entry_t **entries, hp_entry_t *current)
 	/* This symbol's recursive level */
 	int recurse_level = 0;
 
-	if (hp_globals.func_hash_counters[current->hash_code] > 0)
+	if (XHG(func_hash_counters)[current->hash_code] > 0)
 	{
 		/* Find this symbols recurse level */
 		for (p = (*entries); p; p = p->prev_hprof)
@@ -1607,7 +1597,7 @@ void hp_mode_common_beginfn(hp_entry_t **entries, hp_entry_t *current)
 			}
 		}
 	}
-	hp_globals.func_hash_counters[current->hash_code]++;
+	XHG(func_hash_counters)[current->hash_code]++;
 
 	/* Init current function's recurse level */
 	current->rlvl_hprof = recurse_level;
@@ -1623,7 +1613,7 @@ void hp_mode_common_beginfn(hp_entry_t **entries, hp_entry_t *current)
  */
 void hp_mode_common_endfn(hp_entry_t **entries, hp_entry_t *current)
 {
-	hp_globals.func_hash_counters[current->hash_code]--;
+	XHG(func_hash_counters)[current->hash_code]--;
 }
 
 
@@ -1642,27 +1632,27 @@ void hp_mode_sampled_init_cb()
 	struct timeval now;
 	uint64 truncated_us;
 	uint64 truncated_tsc;
-	double cpu_freq = hp_globals.cpu_frequencies[hp_globals.cur_cpu_id];
+	double cpu_freq = XHG(cpu_frequencies)[XHG(cur_cpu_id)];
 
 	/* Init the last_sample in tsc */
-	hp_globals.last_sample_tsc = cycle_timer();
+	XHG(last_sample_tsc) = cycle_timer();
 
 	/* Find the microseconds that need to be truncated */
-	gettimeofday(&hp_globals.last_sample_time, 0);
-	now = hp_globals.last_sample_time;
-	hp_trunc_time(&hp_globals.last_sample_time, XHPROF_SAMPLING_INTERVAL);
+	gettimeofday(&XHG(last_sample_time), 0);
+	now = XHG(last_sample_time);
+	hp_trunc_time(&XHG(last_sample_time), XHPROF_SAMPLING_INTERVAL);
 
 	/* Subtract truncated time from last_sample_tsc */
-	truncated_us = get_us_interval(&hp_globals.last_sample_time, &now);
+	truncated_us = get_us_interval(&XHG(last_sample_time), &now);
 	truncated_tsc = get_tsc_from_us(truncated_us, cpu_freq);
-	if (hp_globals.last_sample_tsc > truncated_tsc)
+	if (XHG(last_sample_tsc) > truncated_tsc)
 	{
 		/* just to be safe while subtracting unsigned ints */
-		hp_globals.last_sample_tsc -= truncated_tsc;
+		XHG(last_sample_tsc) -= truncated_tsc;
 	}
 
 	/* Convert sampling interval to ticks */
-	hp_globals.sampling_interval_tsc = get_tsc_from_us(XHPROF_SAMPLING_INTERVAL, cpu_freq);
+	XHG(sampling_interval_tsc) = get_tsc_from_us(XHPROF_SAMPLING_INTERVAL, cpu_freq);
 }
 
 
@@ -1683,13 +1673,13 @@ void hp_mode_hier_beginfn_cb(hp_entry_t **entries, hp_entry_t *current)
 	current->tsc_start = cycle_timer();
 
 	/* Get CPU usage */
-	if (hp_globals.xhprof_flags & XHPROF_FLAGS_CPU)
+	if (XHG(xhprof_flags) & XHPROF_FLAGS_CPU)
 	{
 		getrusage(RUSAGE_SELF, &(current->ru_start_hprof));
 	}
 
 	/* Get memory usage */
-	if (hp_globals.xhprof_flags & XHPROF_FLAGS_MEMORY)
+	if (XHG(xhprof_flags) & XHPROF_FLAGS_MEMORY)
 	{
 		current->mu_start_hprof = zend_memory_usage(0);
 		current->pmu_start_hprof = zend_memory_peak_usage(0);
@@ -1737,7 +1727,7 @@ int hp_mode_shared_endfn_cb(zval * val, hp_entry_t *top, char *symbol)
 	hp_inc_count(val, "ct", 1);
 
 	hp_inc_count(val, "wt", get_us_from_tsc(tsc_end - top->tsc_start,
-				 hp_globals.cpu_frequencies[hp_globals.cur_cpu_id]));
+				 XHG(cpu_frequencies)[XHG(cur_cpu_id)]));
 	return 0;
 }
 
@@ -1762,7 +1752,7 @@ void hp_mode_hier_endfn_cb(hp_entry_t **entries)
 		return;
 	}
 
-	if (hp_globals.xhprof_flags & XHPROF_FLAGS_CPU)
+	if (XHG(xhprof_flags) & XHPROF_FLAGS_CPU)
 	{
 		/* Get CPU usage */
 		getrusage(RUSAGE_SELF, &ru_end);
@@ -1773,7 +1763,7 @@ void hp_mode_hier_endfn_cb(hp_entry_t **entries)
 					 &(ru_end.ru_stime))));
 	}
 
-	if (hp_globals.xhprof_flags & XHPROF_FLAGS_MEMORY)
+	if (XHG(xhprof_flags) & XHPROF_FLAGS_MEMORY)
 	{
 		/* Get Memory usage */
 		mu_end = zend_memory_usage(0);
@@ -1809,19 +1799,19 @@ ZEND_API void execute_ex_replace(zend_execute_data *execute_data)
 	int hp_profile_flag = 1;
 	while(1){
 		int ret;
-		if(hp_globals.enabled){
+		if(XHG(enabled)){
 			if(NULL != (funcName = hp_opcode_get_function_name(execute_data))){
-				BEGIN_PROFILING(&hp_globals.entries, funcName, hp_profile_flag);
+				BEGIN_PROFILING(&XHG(entries), funcName, hp_profile_flag);
 			}
 		}
 		ret = zend_vm_call_opcode_handler(execute_data);
 		if(funcName)
 		{
-			if(hp_globals.enabled)
+			if(XHG(enabled))
 			{
 				// main() can't be out here
-				if (hp_globals.entries && hp_globals.entries->prev_hprof) {
-					END_PROFILING(&hp_globals.entries, hp_profile_flag);
+				if (XHG(entries) && XHG(entries)->prev_hprof) {
+					END_PROFILING(&XHG(entries), hp_profile_flag);
 				}
 			}
 			efree(funcName);
@@ -1846,7 +1836,7 @@ ZEND_API void execute_ex_replace(zend_execute_data *execute_data)
  */
 ZEND_DLEXPORT void hp_execute_ex (zend_execute_data *execute_data) {
 
-  if(!hp_globals.enabled){
+  if(!XHG(enabled)){
 	  _zend_execute_ex(execute_data);
 	  return;
   }
@@ -1860,10 +1850,10 @@ ZEND_DLEXPORT void hp_execute_ex (zend_execute_data *execute_data) {
     return;
   }
 
-  BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);
+  BEGIN_PROFILING(&XHG(entries), func, hp_profile_flag);
   _zend_execute_ex(execute_data);
-  if (hp_globals.entries) {
-    END_PROFILING(&hp_globals.entries, hp_profile_flag);
+  if (XHG(entries)) {
+    END_PROFILING(&XHG(entries), hp_profile_flag);
   }
   efree(func);
 }
@@ -1887,11 +1877,11 @@ ZEND_DLEXPORT zend_op_array* hp_compile_file(zend_file_handle *file_handle, int 
 	func = (char *) emalloc(len);
 	snprintf(func, len, "load::%s", filename);
 
-	BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);
+	BEGIN_PROFILING(&XHG(entries), func, hp_profile_flag);
 	ret = _zend_compile_file(file_handle, type);
-	if (hp_globals.entries)
+	if (XHG(entries))
 	{
-		END_PROFILING(&hp_globals.entries, hp_profile_flag);
+		END_PROFILING(&XHG(entries), hp_profile_flag);
 	}
 
 	efree(func);
@@ -1913,11 +1903,11 @@ ZEND_DLEXPORT zend_op_array* hp_compile_string(zval *source_string, char *filena
 	func = (char *) emalloc(len);
 	snprintf(func, len, "eval::%s", filename);
 
-	BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);
+	BEGIN_PROFILING(&XHG(entries), func, hp_profile_flag);
 	ret = _zend_compile_string(source_string, filename);
-	if (hp_globals.entries)
+	if (XHG(entries))
 	{
-		END_PROFILING(&hp_globals.entries, hp_profile_flag);
+		END_PROFILING(&XHG(entries), hp_profile_flag);
 	}
 
 	efree(func);
@@ -1937,12 +1927,12 @@ ZEND_DLEXPORT zend_op_array* hp_compile_string(zval *source_string, char *filena
  */
 static void hp_begin(long level, long xhprof_flags)
 {
-	if (!hp_globals.enabled)
+	if (!XHG(enabled))
 	{
 		int hp_profile_flag = 1;
 
-		hp_globals.enabled = 1;
-		hp_globals.xhprof_flags = (uint32) xhprof_flags;
+		XHG(enabled) = 1;
+		XHG(xhprof_flags) = (uint32) xhprof_flags;
 
 		 /* Replace zend_compile with our proxy */
 		_zend_compile_file = zend_compile_file;
@@ -1958,23 +1948,23 @@ static void hp_begin(long level, long xhprof_flags)
 
 		/* Initialize with the dummy mode first Having these dummy callbacks saves
 		 * us from checking if any of the callbacks are NULL everywhere. */
-		hp_globals.mode_cb.init_cb = hp_mode_dummy_init_cb;
-		hp_globals.mode_cb.exit_cb = hp_mode_dummy_exit_cb;
-		hp_globals.mode_cb.begin_fn_cb = hp_mode_dummy_beginfn_cb;
-		hp_globals.mode_cb.end_fn_cb = hp_mode_dummy_endfn_cb;
+		XHG(mode_cb).init_cb = hp_mode_dummy_init_cb;
+		XHG(mode_cb).exit_cb = hp_mode_dummy_exit_cb;
+		XHG(mode_cb).begin_fn_cb = hp_mode_dummy_beginfn_cb;
+		XHG(mode_cb).end_fn_cb = hp_mode_dummy_endfn_cb;
 
 		/* Register the appropriate callback functions Override just a subset of
 		 * all the callbacks is OK. */
 		switch (level)
 		{
 		case XHPROF_MODE_HIERARCHICAL:
-			hp_globals.mode_cb.begin_fn_cb = hp_mode_hier_beginfn_cb;
-			hp_globals.mode_cb.end_fn_cb = hp_mode_hier_endfn_cb;
+			XHG(mode_cb).begin_fn_cb = hp_mode_hier_beginfn_cb;
+			XHG(mode_cb).end_fn_cb = hp_mode_hier_endfn_cb;
 			break;
 		case XHPROF_MODE_SAMPLED:
-			hp_globals.mode_cb.init_cb = hp_mode_sampled_init_cb;
-			hp_globals.mode_cb.begin_fn_cb = hp_mode_sampled_beginfn_cb;
-			hp_globals.mode_cb.end_fn_cb = hp_mode_sampled_endfn_cb;
+			XHG(mode_cb).init_cb = hp_mode_sampled_init_cb;
+			XHG(mode_cb).begin_fn_cb = hp_mode_sampled_beginfn_cb;
+			XHG(mode_cb).end_fn_cb = hp_mode_sampled_endfn_cb;
 			break;
 		}
 
@@ -1982,7 +1972,7 @@ static void hp_begin(long level, long xhprof_flags)
 		hp_init_profiler_state(level);
 
 		/* start profiling from fictitious main() */
-		BEGIN_PROFILING(&hp_globals.entries, ROOT_SYMBOL, hp_profile_flag);
+		BEGIN_PROFILING(&XHG(entries), ROOT_SYMBOL, hp_profile_flag);
 	}
 }
 
@@ -1992,13 +1982,13 @@ static void hp_begin(long level, long xhprof_flags)
 static void hp_end()
 {
 	/* Bail if not ever enabled */
-	if (!hp_globals.ever_enabled)
+	if (!XHG(ever_enabled))
 	{
 		return;
 	}
 
 	/* Stop profiler if enabled */
-	if (hp_globals.enabled)
+	if (XHG(enabled))
 	{
 		hp_stop();
 	}
@@ -2016,9 +2006,9 @@ static void hp_stop()
 	int hp_profile_flag = 1;
 
 	/* End any unfinished calls */
-	while (hp_globals.entries)
+	while (XHG(entries))
 	{
-		END_PROFILING(&hp_globals.entries, hp_profile_flag);
+		END_PROFILING(&XHG(entries), hp_profile_flag);
 	}
 
 	/* Remove proxies, restore the originals */
@@ -2027,10 +2017,10 @@ static void hp_stop()
 	zend_execute_ex       = _zend_execute_ex;
 
 	/* Resore cpu affinity. */
-	restore_cpu_affinity(&hp_globals.prev_mask);
+	restore_cpu_affinity(&XHG(prev_mask));
 
 	/* Stop profiling */
-	hp_globals.enabled = 0;
+	XHG(enabled) = 0;
 }
 
 
