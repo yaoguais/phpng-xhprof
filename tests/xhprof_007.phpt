@@ -1,8 +1,9 @@
 --TEST--
 XHProf: Test excluding call_user_func and similar functions
-Author: mpal
 --INI--
 error_reporting = E_ALL & ~E_NOTICE & ~E_DEPRECATED
+--XFAIL--
+call user func is a special case in PHP 7, it cannot be ignored
 --FILE--
 <?php
 include_once dirname(__FILE__).'/common.php';
