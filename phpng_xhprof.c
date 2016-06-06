@@ -119,6 +119,69 @@ typedef unsigned int uint32;
 typedef unsigned char uint8;
 #endif
 
+static char* hp_count_prefix = NULL;
+
+typedef struct {
+	char *str;
+	int len;
+} hp_split_str_t;
+
+typedef struct {
+	char *orig;
+	int count;
+	hp_split_str_t *val;
+} hp_split_t;
+
+hp_split_t hp_prefixs = {
+	.orig = NULL,
+	.count = 0,
+	.val = NULL
+};
+
+static int hp_str_split(char *delim, char *str, hp_split_t *t)
+{
+	if (NULL == str) {
+		return 0;
+	}
+
+	int len = strlen(str);
+	if (!len) {
+		return 0;
+	}
+	t->orig = (char *)pemalloc(strlen(str) * sizeof(char) + 1, 1);
+	t->count = 0;
+	memcpy(t->orig, str, len);
+	t->orig[len] = '\0';
+	char *p = strtok(t->orig, delim);
+	while (p) {
+		if (t->count == 0) {
+			t->val = (hp_split_str_t *)pemalloc(sizeof(hp_split_str_t), 1);
+		} else {
+			t->val = (hp_split_str_t *)realloc(t->val, sizeof(hp_split_str_t) * (t->count + 1));
+		}
+		t->val[t->count].str = strdup(p);
+		t->val[t->count].len = strlen(p);
+		p = strtok(NULL, delim);
+		t->count++;
+	}
+	return 0;
+}
+
+static void hp_str_split_free(hp_split_t *t)
+{
+	if (t->count == 0) {
+		return;
+	}
+	pefree(t->orig, 1);
+	int i;
+	for (i = 0; i < t->count; i++) {
+		pefree(t->val[i].str, 1);
+	}
+	if (t->count > 0) {
+		pefree(t->val, 1);
+	}
+}
+
 
 /**
  * *****************************
@@ -350,6 +413,19 @@ zend_module_entry xhprof_module_entry =
 	ZEND_TSRMLS_CACHE_DEFINE();
 #endif
 
+ZEND_INI_MH(hp_parse_prefix)
+{
+	if (!new_value || new_value->len == 0) {
+		return FAILURE;
+	}
+	hp_count_prefix = strdup(new_value->val);
+	if (hp_count_prefix == NULL) {
+		return FAILURE;
+	}
+
+	return SUCCESS;
+}
+
 PHP_INI_BEGIN()
 
 /* output directory:
@@ -359,6 +435,12 @@ PHP_INI_BEGIN()
  * directory specified by this ini setting.
  */
 PHP_INI_ENTRY("xhprof.output_dir", "", PHP_INI_ALL, NULL)
+
+/**
+ * Count by the prefix
+ * If empty, all calls will be count
+ */
+PHP_INI_ENTRY("xhprof.count_prefix", "", PHP_INI_ALL, hp_parse_prefix)
 
 PHP_INI_END()
 
@@ -499,6 +581,8 @@ PHP_MINIT_FUNCTION(xhprof)
 	/* To make it random number generator repeatable to ease testing. */
 	srand(0);
 #endif
+
+	hp_str_split(",", hp_count_prefix, &hp_prefixs);
 	return SUCCESS;
 }
 
@@ -513,6 +597,7 @@ PHP_MSHUTDOWN_FUNCTION(xhprof)
 	/* free any remaining items in the free list */
 	hp_free_the_free_list();
 
+	hp_str_split_free(&hp_prefixs);
 	UNREGISTER_INI_ENTRIES();
 
 	return SUCCESS;
@@ -1858,6 +1943,20 @@ ZEND_DLEXPORT void hp_execute_ex (zend_execute_data *execute_data) {
   if (!func) {
     _zend_execute_ex(execute_data);
     return;
+  }
+
+  if (hp_prefixs.count) {
+	  int is_hit = 0, i;
+	  for (i = 0; i < hp_prefixs.count; i++) {
+		  if (strncmp(hp_prefixs.val[i].str, func, hp_prefixs.val[i].len) == 0) {
+			  is_hit = 1;
+			  break;
+		  }
+	  }
+	  if (!is_hit) {
+		  _zend_execute_ex(execute_data);
+		  return;
+	  }
   }
 
   BEGIN_PROFILING(&hp_globals.entries, func, hp_profile_flag);

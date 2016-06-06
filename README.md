@@ -34,6 +34,7 @@ Then add the configuration into php.ini
     [xhprof]
     extension = phpng_xhprof.so
     xhprof.output_dir = /tmp/xhprof
+    xhprof.count_prefix =
 
 
 
