@@ -36,8 +36,10 @@
 	[xhprof]
 	extension = phpng_xhprof.so
 	xhprof.output_dir = /tmp/xhprof
+	xhprof.count_prefix =
 
 output_dir指默认的分析结果保存目录，在php脚本中也可以临时设置一个新的。
+count_prefix是根据前缀做统计计算，如果为空则统计所有的调用
 
 
 ## 实现细节 ##
