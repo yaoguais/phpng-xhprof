@@ -45,6 +45,14 @@ If you compiled PHP7 from source code, then
     ./configure --with-php-config=/path/to/php7/bin/php-config
     make clean && make && make test && sudo make install
 
+Then add the profile code
+
+	xhprof_enable();
+	// your code
+	// ...
+	file_put_contents((ini_get('xhprof.output_dir') ? : '/tmp') . '/' . uniqid() . '.xhprof.xhprof', serialize(xhprof_disable()));
+
+
 
 
 
