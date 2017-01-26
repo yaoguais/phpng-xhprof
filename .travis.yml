@@ -1,0 +1,11 @@
+language: php 
+
+php:
+  - 7.0
+  - 7.1
+
+before_script:
+    - phpize && ./configure && make clean && make
+
+script:
+    - make test
